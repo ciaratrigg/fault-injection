@@ -1,0 +1,38 @@
+services:
+  DB:
+    image: postgres
+    container_name: DB
+    ports:
+      - 5432:5432
+    networks:
+      - spring-postgres
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=mypswd
+    volumes:
+      - db:/var/lib/postgresql/data
+      - ./db-init:/docker-entrypoint-initdb.d
+    restart: always
+
+  faultinjection:
+    image: faultinjection
+    build: .
+    container_name: faultinjection
+    ports:
+      - 8080:8080
+    networks:
+      - spring-postgres
+    environment:
+      - DB_URL=jdbc:postgresql://DB:5432/docker
+      - DB_USER=docker
+      - DB_PASSWORD=pswd-docker
+    depends_on:
+      - DB
+    restart: always
+
+volumes:
+  db:
+
+networks:
+  spring-postgres:
