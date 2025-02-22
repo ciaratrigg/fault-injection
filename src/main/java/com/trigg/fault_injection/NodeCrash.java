@@ -8,6 +8,9 @@ public class NodeCrash extends Fault{
         this.num_nodes = num_nodes;
     }
 
+    public NodeCrash() {
+    }
+
     public int getNum_nodes() {
         return num_nodes;
     }

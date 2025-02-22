@@ -15,6 +15,9 @@ public abstract class Fault {
         this.scheduled_for = scheduled_for;
     }
 
+    public Fault() {
+    }
+
     public int getF_id() {
         return f_id;
     }

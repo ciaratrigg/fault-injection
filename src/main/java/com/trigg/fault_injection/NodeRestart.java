@@ -8,7 +8,9 @@ public class NodeRestart extends Fault{
         super(f_id, u_id, name, duration, scheduled_for);
         this.num_nodes = num_nodes;
         this.frequency = freq;
+    }
 
+    public NodeRestart() {
     }
 
     public int getNum_nodes() {
