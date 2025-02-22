@@ -3,7 +3,7 @@ services:
     image: postgres
     container_name: DB
     ports:
-      - 5432:5432
+      - 5436:5432
     networks:
       - spring-postgres
     environment:
