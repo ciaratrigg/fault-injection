@@ -4,8 +4,8 @@ public abstract class Fault {
     int f_id;
     int u_id;
     String name;
-    int num_nodes;
     int duration;
+    int scheduled_for;
 
     public int getF_id() {
         return f_id;
@@ -31,14 +31,6 @@ public abstract class Fault {
         this.name = name;
     }
 
-    public int getNum_nodes() {
-        return num_nodes;
-    }
-
-    public void setNum_nodes(int num_nodes) {
-        this.num_nodes = num_nodes;
-    }
-
     public int getDuration() {
         return duration;
     }
@@ -54,9 +46,4 @@ public abstract class Fault {
     public void setScheduled_for(int scheduled_for) {
         this.scheduled_for = scheduled_for;
     }
-
-    int scheduled_for;
-
-
-
 }
