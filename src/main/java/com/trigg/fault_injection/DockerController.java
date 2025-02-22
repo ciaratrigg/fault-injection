@@ -1,23 +1,36 @@
 package com.trigg.fault_injection;
 
-import com.github.dockerjava.api.model.Container;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.sql.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 @RestController
 @RequestMapping("/api/docker")
 public class DockerController {
-
-    private DockerService dockerService;
-
+    private final DockerService dockerService;
     @Autowired
+    private DynamicJobScheduler dynamicJobScheduler;
+
     public DockerController(DockerService dockerService) {
         this.dockerService = dockerService;
+    }
+
+    @GetMapping("/schedule-job")
+    public String scheduleJob(@RequestParam String jobType, @RequestParam long time) {
+        // For example, create a new fault injection task
+        Runnable job = () -> System.out.println("Injecting fault at: " + time);
+
+        // Schedule it at a specific time
+        dynamicJobScheduler.scheduleJob(job, new Date(time));
+
+        return "Job scheduled to run at: " + time;
     }
 
     @GetMapping("/list")
@@ -31,19 +44,20 @@ public class DockerController {
     }
 
     @GetMapping("/stop")
-    public String stopContainers() throws IOException {
-        return dockerService.stopContainer();
-    }
-
-    @GetMapping("/status")
-    public void containerStatus() throws IOException {
-        System.out.println(dockerService.containerStatus());
+    public String stopContainer() {
+        dockerService.stopContainerAsync();
+        return "Stopping a container asynchronously.";
     }
 
     @GetMapping("/delay")
-    public void delayNetwork() throws Exception {
-        System.out.println(dockerService.networkDelay());
+    public String injectNetworkDelay() {
+        dockerService.injectNetworkDelayAsync();
+        return "Injecting network delay asynchronously.";
     }
 
+    @GetMapping("/restart")
+    public String restartContainer() {
+        dockerService.restartContainerAsync();
+        return "Restarting a container asynchronously.";
+    }
 }
-
