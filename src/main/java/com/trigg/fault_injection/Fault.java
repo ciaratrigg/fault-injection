@@ -7,6 +7,14 @@ public abstract class Fault {
     int duration;
     int scheduled_for;
 
+    public Fault(int f_id, int u_id, String name, int duration, int scheduled_for) {
+        this.f_id = f_id;
+        this.u_id = u_id;
+        this.name = name;
+        this.duration = duration;
+        this.scheduled_for = scheduled_for;
+    }
+
     public int getF_id() {
         return f_id;
     }
@@ -46,4 +54,5 @@ public abstract class Fault {
     public void setScheduled_for(int scheduled_for) {
         this.scheduled_for = scheduled_for;
     }
+
 }
