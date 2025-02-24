@@ -21,27 +21,19 @@ public class FaultCommands {
         this.faultFactory = faultFactory;
     }
 
-    @ShellMethod(key = "define")
+    @ShellMethod(key = "inject")
     public String defineFault(String type){
         try{
             Fault fault = faultFactory.createFault(type);
-            return type + "Fault created successfully";
+            if(fault != null){
+                return type + " Fault created successfully";
+            }
+            else{
+                return "Invalid input. Try again.";
+            }
         } catch(IllegalArgumentException e){
             return "Error " + e.getMessage();
         }
     }
 
-    @ShellMethod(key = "node-crash")
-    public String nodeCrash(
-            @ShellOption(defaultValue = "spring") String arg
-    ) {
-        return "Hello world " + arg;
-    }
-
-    @ShellMethod(key = "node-restart")
-    public String nodeRestart(
-            @ShellOption(defaultValue = "spring") String arg
-    ) {
-        return "Hello world2 " + arg;
-    }
 }
