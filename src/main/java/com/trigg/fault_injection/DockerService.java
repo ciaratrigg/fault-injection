@@ -44,6 +44,7 @@ public class DockerService {
 
     // Stop a random container (Runs in a separate thread)
     public void stopContainerAsync() {
+        System.out.println("Creating a new thread...");
         executorService.submit(() -> {
             try {
                 List<String> containerIds = listContainerIds();
@@ -51,7 +52,6 @@ public class DockerService {
                     LOGGER.warning("No containers available to stop.");
                     return;
                 }
-
                 int randIndex = (int) (Math.random() * containerIds.size());
                 String containerId = containerIds.get(randIndex);
                 dockerClient.stopContainerCmd(containerId).exec();
