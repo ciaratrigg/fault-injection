@@ -1,5 +1,6 @@
 package com.trigg.fault_injection;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
@@ -12,6 +13,23 @@ import java.util.List;
 
 @ShellComponent
 public class FaultCommands {
+
+    private FaultFactory faultFactory;
+
+    @Autowired
+    public FaultCommands(FaultFactory faultFactory){
+        this.faultFactory = faultFactory;
+    }
+
+    @ShellMethod(key = "define")
+    public String defineFault(String type){
+        try{
+            Fault fault = faultFactory.createFault(type);
+            return type + "Fault created successfully";
+        } catch(IllegalArgumentException e){
+            return "Error " + e.getMessage();
+        }
+    }
 
     @ShellMethod(key = "node-crash")
     public String nodeCrash(
@@ -26,19 +44,4 @@ public class FaultCommands {
     ) {
         return "Hello world2 " + arg;
     }
-
-    @ShellMethod(key = "network-latency")
-    public String networkLatency(
-            @ShellOption(defaultValue = "spring") String arg
-    ) {
-        return "Hello world3 " + arg;
-    }
-
-    @ShellMethod(key = "throttle-bandwidth")
-    public String throttleBandwidth(
-            @ShellOption(defaultValue = "spring") String arg
-    ) {
-        return "Hello world4 " + arg;
-    }
-
 }
