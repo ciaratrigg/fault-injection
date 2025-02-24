@@ -3,10 +3,6 @@ package com.trigg.fault_injection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
-import org.springframework.shell.standard.ShellOption;
-
-import java.io.IOException;
-import java.util.List;
 
 // add this line to application.properties to launch interactive shell by default
 // spring.shell.interactive.enabled=true
