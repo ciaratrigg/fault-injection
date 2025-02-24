@@ -1,5 +1,6 @@
 package com.trigg.fault_injection;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
@@ -13,32 +14,26 @@ import java.util.List;
 @ShellComponent
 public class FaultCommands {
 
-    @ShellMethod(key = "node-crash")
-    public String nodeCrash(
-            @ShellOption(defaultValue = "spring") String arg
-    ) {
-        return "Hello world " + arg;
+    private FaultFactory faultFactory;
+
+    @Autowired
+    public FaultCommands(FaultFactory faultFactory){
+        this.faultFactory = faultFactory;
     }
 
-    @ShellMethod(key = "node-restart")
-    public String nodeRestart(
-            @ShellOption(defaultValue = "spring") String arg
-    ) {
-        return "Hello world2 " + arg;
-    }
-
-    @ShellMethod(key = "network-latency")
-    public String networkLatency(
-            @ShellOption(defaultValue = "spring") String arg
-    ) {
-        return "Hello world3 " + arg;
-    }
-
-    @ShellMethod(key = "throttle-bandwidth")
-    public String throttleBandwidth(
-            @ShellOption(defaultValue = "spring") String arg
-    ) {
-        return "Hello world4 " + arg;
+    @ShellMethod(key = "inject")
+    public String defineFault(String type){
+        try{
+            Fault fault = faultFactory.createFault(type);
+            if(fault != null){
+                return type + " Fault created successfully";
+            }
+            else{
+                return "Invalid input. Try again.";
+            }
+        } catch(IllegalArgumentException e){
+            return "Error " + e.getMessage();
+        }
     }
 
 }
