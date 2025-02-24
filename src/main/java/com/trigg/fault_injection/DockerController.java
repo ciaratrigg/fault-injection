@@ -14,23 +14,11 @@ import java.util.List;
 @RequestMapping("/api/docker")
 public class DockerController {
     private final DockerService dockerService;
-    @Autowired
-    private DynamicJobScheduler dynamicJobScheduler;
 
     public DockerController(DockerService dockerService) {
         this.dockerService = dockerService;
     }
 
-    @GetMapping("/schedule-job")
-    public String scheduleJob(@RequestParam String jobType, @RequestParam long time) {
-        // For example, create a new fault injection task
-        Runnable job = () -> System.out.println("Injecting fault at: " + time);
-
-        // Schedule it at a specific time
-        dynamicJobScheduler.scheduleJob(job, new Date(time));
-
-        return "Job scheduled to run at: " + time;
-    }
 
     @GetMapping("/list")
     public String listRunningContainers() {
