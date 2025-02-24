@@ -41,26 +41,4 @@ public class FaultCommands {
         return "Hello world4 " + arg;
     }
 
-    /*private final DockerService dockerService;
-
-    // Injecting your service layer
-    public FaultCommands(DockerService dockerService) {
-        this.dockerService = dockerService;
-    }
-
-    @ShellMethod(key = "node-crash")
-    public String stopContainer() throws IOException {
-        return dockerService.stopContainer();
-    }
-
-    @ShellMethod("List all containers")
-    public List<String> listContainers() throws IOException {
-        return dockerService.listContainerIds();
-    }*/
-
-
-    /*@ShellMethod("List all faults.")
-    public String listFaults() {
-        return faultService.getAllFaults();
-    }*/
 }
