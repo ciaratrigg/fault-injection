@@ -10,3 +10,14 @@
 1740414575394:define ndode-crash
 1740414581759:define node-crash
 1740415919682:inject node-crash
+1740421694203:inject node-restart
+1740422989134:inject node-crash 2
+1740424175113:inject node-restart 6
+1740424219833:inject node-restart 1
+1740424944693:inject node-crash 7
+1740425033010:inject node-restart 2
+1741028265151:inject network-delay
+1741028369355:inject node-restart
+1741028524365:inject node-restart 1
+1741028542189:inject network-delay 1
+1741560027044:ls
