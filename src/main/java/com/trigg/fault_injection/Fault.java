@@ -1,18 +1,20 @@
 package com.trigg.fault_injection;
 
-public abstract class Fault {
+public class Fault {
     int f_id;
     int u_id;
     String name;
     int duration;
     int scheduled_for;
+    String fault_type;
 
-    public Fault(int f_id, int u_id, String name, int duration, int scheduled_for) {
+    public Fault(int f_id, int u_id, String name, int duration, int scheduled_for, String fault_type) {
         this.f_id = f_id;
         this.u_id = u_id;
         this.name = name;
         this.duration = duration;
         this.scheduled_for = scheduled_for;
+        this.fault_type = fault_type;
     }
 
     public Fault() {
