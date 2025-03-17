@@ -30,11 +30,11 @@ public class DockerController {
         return result;
     }
 
-    @GetMapping("/stop")
+    /*@GetMapping("/stop")
     public String stopContainer() {
-        dockerService.stopContainerAsync();
+        dockerService.stopContainersAsync();
         return "Stopping a container asynchronously.";
-    }
+    }*/
 
     @GetMapping("/delay")
     public String injectNetworkDelay() {
@@ -42,9 +42,9 @@ public class DockerController {
         return "Injecting network delay asynchronously.";
     }
 
-    @GetMapping("/restart")
+    /*@GetMapping("/restart")
     public String restartContainer() {
         dockerService.restartContainerAsync();
         return "Restarting a container asynchronously.";
-    }
+    }*/
 }

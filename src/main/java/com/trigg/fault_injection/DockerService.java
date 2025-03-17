@@ -1,13 +1,15 @@
 package com.trigg.fault_injection;
 
 import com.github.dockerjava.api.DockerClient;
-import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.model.Container;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -26,7 +28,6 @@ public class DockerService {
         this.executorService = Executors.newFixedThreadPool(5); // Limit concurrency to 5 threads
     }
 
-    // List running containers
     public List<Container> listContainers() {
         return dockerClient.listContainersCmd()
                 .withShowAll(true)
@@ -42,67 +43,70 @@ public class DockerService {
         return containerIds;
     }
 
-    // Stop a random container (Runs in a separate thread)
-    public void stopContainerAsync() {
+    public void stopContainersAsync(int numNodes) {
         System.out.println("Creating a new thread...");
         executorService.submit(() -> {
             try {
                 List<String> containerIds = listContainerIds();
-                if (containerIds.isEmpty()) {
-                    LOGGER.warning("No containers available to stop.");
+                int totalContainers = containerIds.size();
+
+                if (totalContainers <= 1) {
+                    LOGGER.warning("Not enough containers available to stop.");
                     return;
                 }
-                int randIndex = (int) (Math.random() * containerIds.size());
-                String containerId = containerIds.get(randIndex);
-                dockerClient.stopContainerCmd(containerId).exec();
-                LOGGER.info("Stopping container with ID: " + containerId);
+
+                int maxStoppable = totalContainers - 1;
+                int numToStop = numNodes;
+                if (numNodes > maxStoppable) {
+                    LOGGER.warning("Requested to stop " + numNodes + " containers, but only " + maxStoppable + " can be stopped.");
+                    numToStop = maxStoppable;
+                }
+
+                Collections.shuffle(containerIds);
+                List<String> containersToStop = containerIds.subList(0, numToStop);
+
+                for (String containerId : containersToStop) {
+                    dockerClient.stopContainerCmd(containerId).exec();
+                    LOGGER.info("Stopping container with ID: " + containerId);
+                }
             } catch (Exception e) {
-                LOGGER.severe("Error stopping container: " + e.getMessage());
+                LOGGER.severe("Error stopping containers: " + e.getMessage());
             }
         });
     }
 
-    // Inject network delay into a random container (Runs in a separate thread)
-    public void injectNetworkDelayAsync() {
+    public void restartContainersAsync(int numNodes) {
+        System.out.println("Creating a new thread...");
         executorService.submit(() -> {
             try {
                 List<String> containerIds = listContainerIds();
-                if (containerIds.isEmpty()) {
-                    LOGGER.warning("No containers available to inject network delay.");
+                int totalContainers = containerIds.size();
+
+                if (totalContainers <= 1) {
+                    LOGGER.warning("Not enough containers available to restart.");
                     return;
                 }
 
-                int randIndex = (int) (Math.random() * containerIds.size());
-                String containerId = containerIds.get(randIndex);
-                File location = new File("/Users/ciaratrigg/Desktop/SE 598/spring project/target systems/pg-primary-replica");
-                String command = "docker exec " + containerId + " tc qdisc add dev eth0 root netem delay 100ms";
-                runCommand(location, command);
-                LOGGER.info("Injected network delay into container ID: " + containerId);
+                int maxRestartable = totalContainers - 1;
+                int numToStop = numNodes;
+                if (numNodes > maxRestartable) {
+                    LOGGER.warning("Requested to restart " + numNodes + " containers, but only " + maxRestartable + " can be restarted.");
+                    numToStop = maxRestartable;
+                }
+
+                Collections.shuffle(containerIds);
+                List<String> containersToRestart = containerIds.subList(0, numToStop);
+
+                for (String containerId : containersToRestart) {
+                    dockerClient.restartContainerCmd(containerId).exec();
+                    LOGGER.info("Restarted container with ID: " + containerId);
+                }
             } catch (Exception e) {
-                LOGGER.severe("Error injecting network delay: " + e.getMessage());
+                LOGGER.severe("Error restarting containers: " + e.getMessage());
             }
         });
     }
 
-    // Restart a container (Runs in a separate thread)
-    public void restartContainerAsync() {
-        executorService.submit(() -> {
-            try {
-                List<String> containerIds = listContainerIds();
-                if (containerIds.isEmpty()) {
-                    LOGGER.warning("No containers available to restart.");
-                    return;
-                }
-
-                int randIndex = (int) (Math.random() * containerIds.size());
-                String containerId = containerIds.get(randIndex);
-                dockerClient.restartContainerCmd(containerId).exec();
-                LOGGER.info("Restarted container with ID: " + containerId);
-            } catch (Exception e) {
-                LOGGER.severe("Error restarting container: " + e.getMessage());
-            }
-        });
-    }
 
     // Gracefully shut down the ExecutorService when the application stops
     public void shutdown() {
