@@ -59,5 +59,13 @@ public class Fault {
     public void setScheduled_for(int scheduled_for) {
         this.scheduled_for = scheduled_for;
     }
+    public String getFault_type() {
+        return fault_type;
+    }
+
+    public void setFault_type(String fault_type) {
+        this.fault_type = fault_type;
+    }
+
 
 }
