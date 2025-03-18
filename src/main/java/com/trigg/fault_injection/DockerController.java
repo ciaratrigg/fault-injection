@@ -36,11 +36,11 @@ public class DockerController {
         return "Stopping a container asynchronously.";
     }*/
 
-    @GetMapping("/delay")
+   /* @GetMapping("/delay")
     public String injectNetworkDelay() {
-        dockerService.injectNetworkDelayAsync();
+        dockerService.injectNetworkDelay();
         return "Injecting network delay asynchronously.";
-    }
+    }*/
 
     /*@GetMapping("/restart")
     public String restartContainer() {

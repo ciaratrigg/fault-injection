@@ -17,8 +17,9 @@ public class FaultCommands {
         this.faultFactory = faultFactory;
     }
 
-    @ShellMethod(key = "inject")
-    public String defineFault(String type, int num_nodes){
+
+    @ShellMethod(key = "define")
+    public String injectFault(String type, int num_nodes){
         try{
             Fault fault = faultFactory.createFault(type, num_nodes);
             if(fault != null){

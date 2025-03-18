@@ -22,9 +22,9 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
     f_id SERIAL PRIMARY KEY,
     u_id INT REFERENCES user_account(u_id) ON DELETE CASCADE,
     name VARCHAR(50),
-    num_nodes INT,
     duration INT,
-    scheduled_for INT
+    scheduled_for INT,
+    fault_type VARCHAR(50)
   );
 
   CREATE TABLE IF NOT EXISTS cpu_usage (
