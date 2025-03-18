@@ -9,7 +9,7 @@ public class FaultFactory {
     //instead it will just create the new fault and insert it into the database
     // then the calls to service will likely be in the controller
     @Autowired
-    DockerService dockerService;
+    private DockerService dockerService;
 
     public FaultFactory(DockerService dockerService){
         this.dockerService = dockerService;
