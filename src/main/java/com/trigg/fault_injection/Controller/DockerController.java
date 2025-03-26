@@ -20,17 +20,6 @@ public class DockerController {
         this.faultService = faultService;
     }
 
-
-    @GetMapping("/list")
-    public String listRunningContainers() {
-        String result = "";
-        List<String> containerIds = dockerService.listContainerIds();
-        for(String s : containerIds){
-            result = result + "Container ID: " + s + "\n";
-        }
-        return result;
-    }
-
     @GetMapping("/define")
     public String defineFault(String type, String name, int duration){
         try{
@@ -46,21 +35,4 @@ public class DockerController {
         }
     }
 
-    /*@GetMapping("/stop")
-    public String stopContainer() {
-        dockerService.stopContainersAsync();
-        return "Stopping a container asynchronously.";
-    }*/
-
-   /* @GetMapping("/delay")
-    public String injectNetworkDelay() {
-        dockerService.injectNetworkDelay();
-        return "Injecting network delay asynchronously.";
-    }*/
-
-    /*@GetMapping("/restart")
-    public String restartContainer() {
-        dockerService.restartContainerAsync();
-        return "Restarting a container asynchronously.";
-    }*/
 }
