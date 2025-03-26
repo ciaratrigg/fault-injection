@@ -20,7 +20,7 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
 
   CREATE TABLE IF NOT EXISTS fault_scenario (
     f_id SERIAL PRIMARY KEY,
-    u_id INT REFERENCES user_account(u_id) ON DELETE CASCADE,
+    username VARCHAR(50) REFERENCES user_account(username) ON DELETE CASCADE,
     name VARCHAR(50),
     duration INT,
     scheduled_for INT,
@@ -99,4 +99,7 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
   ALTER TABLE node_crash OWNER TO docker;
   ALTER TABLE packet_loss OWNER TO docker;
 
+  INSERT INTO user_account (username) VALUES ('admin') ON CONFLICT DO NOTHING;
+
 EOSQL
+

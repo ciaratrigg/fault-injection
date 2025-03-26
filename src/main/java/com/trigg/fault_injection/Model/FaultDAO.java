@@ -1,4 +1,4 @@
-package com.trigg.fault_injection;
+package com.trigg.fault_injection.Model;
 
 import org.springframework.stereotype.Repository;
 
@@ -11,8 +11,7 @@ public interface FaultDAO {
     List<Fault> selectAllFaults();
     int insertNodeCrash(NodeCrash nc);
     int insertNodeRestart(NodeRestart nr);
-
-    //column for fault type in main fault table to do the join?
     Fault selectFaultByName(String faultName);
+    void insertFault(Fault fault);
 
 }

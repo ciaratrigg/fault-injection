@@ -1,4 +1,4 @@
-package com.trigg.fault_injection;
+package com.trigg.fault_injection.Model;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import javax.xml.transform.Result;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -38,17 +37,19 @@ public class FaultDAOImpl implements FaultDAO {
         return faults;
     }
 
+
+
     @Override
     public int insertNodeCrash(NodeCrash nc) {
         logger.info("Inserting node crash fault with details: " + nc);
 
-        String insertFault = "INSERT INTO fault (f_id, u_id, name, duration, scheduled_for, fault_type) " +
-                "VALUES (?, ?, ?, ?, ?, ?) RETURNING f_id";
+        String insertFault = "INSERT INTO fault_scenario (username, name, duration, scheduled_for, fault_type) " +
+                "VALUES (?, ?, ?, ?, ?) RETURNING f_id";
         Integer faultId = jdbcTemplate.queryForObject(insertFault, Integer.class,
-                nc.getU_id(), nc.getName(), nc.getDuration(), nc.getScheduled_for(), nc.getFault_type());
+                "admin", nc.getName(), nc.getDuration(), 12, nc.getFault_type());
 
         String insertNodeCrash = "INSERT INTO node_crash (f_id, num_nodes) VALUES (?, ?)";
-        jdbcTemplate.update(insertNodeCrash, faultId, nc.getNum_nodes());
+        jdbcTemplate.update(insertNodeCrash, faultId, 3);
 
         return faultId;
     }
@@ -57,10 +58,10 @@ public class FaultDAOImpl implements FaultDAO {
     public int insertNodeRestart(NodeRestart nr) {
         logger.info("Inserting node restart fault with details: " + nr);
 
-        String insertFault = "INSERT INTO fault (f_id, u_id, name, duration, scheduled_for, fault_type) " +
-                "VALUES (?, ?, ?, ?, ?, ?) RETURNING f_id";
+        String insertFault = "INSERT INTO fault_scenario (username, name, duration, scheduled_for, fault_type) " +
+                "VALUES (?, ?, ?, ?, ?) RETURNING f_id";
         Integer faultId = jdbcTemplate.queryForObject(insertFault, Integer.class,
-                nr.getU_id(), nr.getName(), nr.getDuration(), nr.getScheduled_for(), nr.getFault_type());
+                nr.getUsername(), nr.getName(), nr.getDuration(), nr.getScheduled_for(), nr.getFault_type());
 
         String insertNodeRestart = "INSERT INTO node_crash (f_id, num_nodes, frequency) VALUES (?, ?, ?)";
         jdbcTemplate.update(insertNodeRestart, faultId, nr.getNum_nodes(), nr.getFrequency());
@@ -75,11 +76,25 @@ public class FaultDAOImpl implements FaultDAO {
         return jdbcTemplate.queryForObject(selectFault, new Object[]{faultName}, new FaultMapper());
     }
 
+    @Override
+    public void insertFault(Fault fault) {
+        if(fault instanceof NodeCrash){
+            insertNodeCrash((NodeCrash) fault);
+        }
+        else if(fault instanceof NodeRestart){
+            insertNodeRestart((NodeRestart) fault);
+        }
+        else{
+            logger.info("Could not insert fault");
+        }
+
+    }
+
     class FaultMapper implements RowMapper<Fault> {
         public Fault mapRow(ResultSet rs, int rownNum) throws SQLException{
             Fault fault = new Fault(
                     rs.getInt("f_id"),
-                    rs.getInt("u_id"),
+                    rs.getString("username"),
                     rs.getString("name"),
                     rs.getInt("duration"),
                     rs.getInt("scheduled_for"),

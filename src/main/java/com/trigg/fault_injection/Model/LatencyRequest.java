@@ -1,4 +1,4 @@
-package com.trigg.fault_injection;
+package com.trigg.fault_injection.Model;
 
 public class LatencyRequest {
     private String proxyName;

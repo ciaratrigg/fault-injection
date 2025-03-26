@@ -1,4 +1,4 @@
-package com.trigg.fault_injection;
+package com.trigg.fault_injection.Service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;

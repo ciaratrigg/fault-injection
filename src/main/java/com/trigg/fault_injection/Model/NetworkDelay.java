@@ -1,11 +1,11 @@
-package com.trigg.fault_injection;
+package com.trigg.fault_injection.Model;
 
-public class NetworkDelay extends Fault{
+public class NetworkDelay extends Fault {
     private int delay;
     private int delta;
 
-    public NetworkDelay(int f_id, int u_id, String name, int duration, int scheduled_for,String fault_type, int delay, int delta){
-        super(f_id, u_id, name, duration, scheduled_for, fault_type);
+    public NetworkDelay(int f_id, String username, String name, int duration, int scheduled_for,String fault_type, int delay, int delta){
+        super(f_id, username, name, duration, scheduled_for, fault_type);
         this.delay = delay;
         this.delta = delta;
     }

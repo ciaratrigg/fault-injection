@@ -1,4 +1,4 @@
-package com.trigg.fault_injection;
+package com.trigg.fault_injection.Service;
 
 import org.springframework.scheduling.annotation.Scheduled;
 

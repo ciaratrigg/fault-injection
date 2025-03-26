@@ -1,5 +1,6 @@
 package com.trigg.fault_injection;
 
+import com.trigg.fault_injection.Service.FaultService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
@@ -10,19 +11,18 @@ import org.springframework.shell.standard.ShellMethod;
 @ShellComponent
 public class FaultCommands {
 
-    private FaultFactory faultFactory;
+    private FaultService faultService;
 
     @Autowired
-    public FaultCommands(FaultFactory faultFactory){
-        this.faultFactory = faultFactory;
+    public FaultCommands(FaultService faultService){
+        this.faultService = faultService;
     }
 
-
     @ShellMethod(key = "define")
-    public String injectFault(String type, int num_nodes){
+    public String defineFault(String type, String name, int duration){
         try{
-            Fault fault = faultFactory.createFault(type, num_nodes);
-            if(fault != null){
+            int result = faultService.defineFault(type, name, duration);
+            if(result == 1){
                 return type + " Fault created successfully";
             }
             else{
