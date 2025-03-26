@@ -1,4 +1,4 @@
-package com.trigg.fault_injection;
+package com.trigg.fault_injection.Model;
 
 import org.springframework.stereotype.Repository;
 

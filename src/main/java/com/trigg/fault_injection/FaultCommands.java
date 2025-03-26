@@ -1,5 +1,6 @@
 package com.trigg.fault_injection;
 
+import com.trigg.fault_injection.Service.FaultService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;

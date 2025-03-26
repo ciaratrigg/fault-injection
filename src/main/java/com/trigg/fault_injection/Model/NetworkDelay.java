@@ -1,6 +1,6 @@
-package com.trigg.fault_injection;
+package com.trigg.fault_injection.Model;
 
-public class NetworkDelay extends Fault{
+public class NetworkDelay extends Fault {
     private int delay;
     private int delta;
 

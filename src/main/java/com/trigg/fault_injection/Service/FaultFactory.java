@@ -1,5 +1,10 @@
-package com.trigg.fault_injection;
+package com.trigg.fault_injection.Service;
 
+import com.trigg.fault_injection.Model.Fault;
+import com.trigg.fault_injection.Model.FaultDAO;
+import com.trigg.fault_injection.Model.NetworkDelay;
+import com.trigg.fault_injection.Model.NodeCrash;
+import com.trigg.fault_injection.Model.NodeRestart;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

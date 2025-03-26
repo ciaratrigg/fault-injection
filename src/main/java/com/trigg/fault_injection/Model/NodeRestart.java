@@ -1,6 +1,6 @@
-package com.trigg.fault_injection;
+package com.trigg.fault_injection.Model;
 
-public class NodeRestart extends Fault{
+public class NodeRestart extends Fault {
     int num_nodes;
     int frequency;
 

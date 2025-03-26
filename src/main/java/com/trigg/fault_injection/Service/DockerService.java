@@ -1,21 +1,15 @@
-package com.trigg.fault_injection;
+package com.trigg.fault_injection.Service;
 
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.model.Container;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
-
-import static com.trigg.fault_injection.TerminalProcess.runCommand;
 
 @Service
 public class DockerService {

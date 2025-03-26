@@ -1,6 +1,6 @@
-package com.trigg.fault_injection;
+package com.trigg.fault_injection.Model;
 
-public class NodeCrash extends Fault{
+public class NodeCrash extends Fault {
     int num_nodes;
 
     public NodeCrash(int f_id, String username, String name, int duration, int scheduled_for, String fault_type, int num_nodes) {
