@@ -2,15 +2,15 @@ package com.trigg.fault_injection;
 
 public class Fault {
     int f_id;
-    int u_id;
+    String username;
     String name;
     int duration;
     int scheduled_for;
     String fault_type;
 
-    public Fault(int f_id, int u_id, String name, int duration, int scheduled_for, String fault_type) {
+    public Fault(int f_id, String username, String name, int duration, int scheduled_for, String fault_type) {
         this.f_id = f_id;
-        this.u_id = u_id;
+        this.username = username;
         this.name = name;
         this.duration = duration;
         this.scheduled_for = scheduled_for;
@@ -28,12 +28,12 @@ public class Fault {
         this.f_id = f_id;
     }
 
-    public int getU_id() {
-        return u_id;
+    public String getUsername() {
+        return this.username;
     }
 
-    public void setU_id(int u_id) {
-        this.u_id = u_id;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getName() {

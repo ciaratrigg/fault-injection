@@ -5,38 +5,52 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class FaultFactory {
-    //this should all be moved once define and inject are separate
-    //instead it will just create the new fault and insert it into the database
-    // then the calls to service will likely be in the controller
-    @Autowired
     private DockerService dockerService;
+    private FaultDAO dao;
 
-    public FaultFactory(DockerService dockerService){
+    @Autowired
+    public FaultFactory(DockerService dockerService, FaultDAO dao){
         this.dockerService = dockerService;
+        this.dao = dao;
     }
 
-    Fault createFault(String type, int num_nodes){
-        Fault fault = null;
+    int defineFault(String type, String name, int duration){
         if(type.equalsIgnoreCase("node-crash")){
             System.out.println("Creating new Node Crash fault...");
-            //this should be moved too when they are separated
-            dockerService.stopContainersAsync(num_nodes);
-            fault = new NodeCrash();
+            NodeCrash fault = new NodeCrash();
+            setCommonAttr(fault, type, name, duration);
+            //add other setters
+            int id = dao.insertNodeCrash(fault); //do i want to do anything with this return value?
+            System.out.println("Successfully inserted fault with id " + id);
+
         }
         else if(type.equalsIgnoreCase("node-restart")){
             System.out.println("Creating new Node Restart fault...");
-            dockerService.restartContainersAsync(num_nodes);
-            fault = new NodeRestart();
+            NodeRestart fault = new NodeRestart();
+            setCommonAttr(fault, type, name, duration);
+            //add other setters
+            int id = dao.insertNodeRestart(fault); //do i want to do anything with this return value?
+            System.out.println("Successfully inserted fault with id " + id);
+
         }
         else if(type.equalsIgnoreCase("network-delay")){
             System.out.println("Creating new Network Delay fault...");
-            //docker service command
-            fault = new NetworkDelay();
+            NetworkDelay fault = new NetworkDelay();
+            setCommonAttr(fault, type, name, duration);
+            //add other setters
+            //add dao call
 
         }
         else{
             System.out.println("Specified fault type does not exist.");
+            return -1;
         }
-        return fault;
+        return 1;
+    }
+
+    public void setCommonAttr(Fault fault, String type, String name, int duration){
+        fault.setFault_type(type);
+        fault.setName(name);
+        fault.setDuration(duration);
     }
 }

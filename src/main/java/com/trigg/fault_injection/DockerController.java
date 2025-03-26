@@ -14,9 +14,11 @@ import java.util.List;
 @RequestMapping("/api/docker")
 public class DockerController {
     private final DockerService dockerService;
+    private FaultService faultService;
 
-    public DockerController(DockerService dockerService) {
+    public DockerController(DockerService dockerService, FaultService faultService) {
         this.dockerService = dockerService;
+        this.faultService = faultService;
     }
 
 
@@ -28,6 +30,21 @@ public class DockerController {
             result = result + "Container ID: " + s + "\n";
         }
         return result;
+    }
+
+    @GetMapping("/define")
+    public String defineFault(String type, String name, int duration){
+        try{
+            int result = faultService.defineFault(type, name, duration);
+            if(result == 1){
+                return type + " Fault created successfully";
+            }
+            else{
+                return "Invalid input. Try again.";
+            }
+        } catch(IllegalArgumentException e){
+            return "Error " + e.getMessage();
+        }
     }
 
     /*@GetMapping("/stop")

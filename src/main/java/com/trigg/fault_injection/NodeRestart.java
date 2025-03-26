@@ -4,8 +4,8 @@ public class NodeRestart extends Fault{
     int num_nodes;
     int frequency;
 
-    public NodeRestart(int f_id, int u_id, String name, int duration, int scheduled_for, String fault_type, int num_nodes, int freq) {
-        super(f_id, u_id, name, duration, scheduled_for, fault_type);
+    public NodeRestart(int f_id, String username, String name, int duration, int scheduled_for, String fault_type, int num_nodes, int freq) {
+        super(f_id, username, name, duration, scheduled_for, fault_type);
         this.num_nodes = num_nodes;
         this.frequency = freq;
     }
