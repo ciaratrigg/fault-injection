@@ -13,5 +13,6 @@ public interface FaultDAO {
     int insertNodeRestart(NodeRestart nr);
     Fault selectFaultByName(String faultName);
     void insertFault(Fault fault);
-
+    NodeCrash selectNodeCrash(String name);
+    NodeRestart selectNodeRestart(String name);
 }

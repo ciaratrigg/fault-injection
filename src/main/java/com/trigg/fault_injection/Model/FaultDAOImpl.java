@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.w3c.dom.Node;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -31,19 +32,17 @@ public class FaultDAOImpl implements FaultDAO {
         List<Fault> faults = new ArrayList<>();
         logger.info("Retrieved all faults");
 
-        String selectAllFaults = "SELECT * FROM fault_scenario";
+        String selectAllFaults = "SELECT * FROM fault";
         faults.addAll(jdbcTemplate.query(selectAllFaults, new FaultMapper()));
 
         return faults;
     }
 
-
-
     @Override
     public int insertNodeCrash(NodeCrash nc) {
         logger.info("Inserting node crash fault with details: " + nc);
 
-        String insertFault = "INSERT INTO fault_scenario (username, name, duration, scheduled_for, fault_type) " +
+        String insertFault = "INSERT INTO fault(username, name, duration, scheduled_for, fault_type) " +
                 "VALUES (?, ?, ?, ?, ?) RETURNING f_id";
         Integer faultId = jdbcTemplate.queryForObject(insertFault, Integer.class,
                 "admin", nc.getName(), nc.getDuration(), 12, nc.getFault_type());
@@ -58,7 +57,7 @@ public class FaultDAOImpl implements FaultDAO {
     public int insertNodeRestart(NodeRestart nr) {
         logger.info("Inserting node restart fault with details: " + nr);
 
-        String insertFault = "INSERT INTO fault_scenario (username, name, duration, scheduled_for, fault_type) " +
+        String insertFault = "INSERT INTO fault(username, name, duration, scheduled_for, fault_type) " +
                 "VALUES (?, ?, ?, ?, ?) RETURNING f_id";
         Integer faultId = jdbcTemplate.queryForObject(insertFault, Integer.class,
                 nr.getUsername(), nr.getName(), nr.getDuration(), nr.getScheduled_for(), nr.getFault_type());
@@ -90,6 +89,35 @@ public class FaultDAOImpl implements FaultDAO {
 
     }
 
+    @Override
+    public NodeCrash selectNodeCrash(String name) {
+        logger.info("Retrieved node crash fault with name " + name);
+        String selectNodeCrash = "SELECT fault.f_id, fault.username, fault.name, fault.duration, " +
+                "fault.scheduled_for, fault.fault_type, node_crash.num_nodes " +
+                "FROM fault JOIN node_crash on fault.f_id = node_crash.f_id WHERE name = ?";
+        return jdbcTemplate.queryForObject(selectNodeCrash, new Object[]{name}, new NodeCrashMapper());
+    }
+
+    @Override
+    public NodeRestart selectNodeRestart(String name) {
+        logger.info("Retrieved node restart fault with name " + name);
+        String selectNodeRestart = "SELECT fault.f_id, fault.username, fault.name, fault.duration, " +
+                "fault.scheduled_for, fault.fault_type, node_restart.num_nodes, node_restart.frequency " +
+                "FROM fault JOIN node_restart on fault.f_id = node_crash.f_id WHERE name = ?";
+        return jdbcTemplate.queryForObject(selectNodeRestart, new Object[]{name}, new NodeRestartMapper());
+    }
+
+    /*
+     @Override
+    public Internship selectInternshipById(int jobId) {
+        logger.info("Retrieved internship with id " + jobId);
+        String SQL = "SELECT job.j_id AS job_id, job.email, job.job_title, job.company, job.city, job.state, " +
+                "internship.hours, internship.wage " +
+                "FROM job JOIN internship ON job.j_id = internship.id WHERE job.j_id = ?";
+        return jdbcTemplate.queryForObject(SQL, new Object[]{jobId}, new InternshipMapper());
+    }
+     */
+
     class FaultMapper implements RowMapper<Fault> {
         public Fault mapRow(ResultSet rs, int rownNum) throws SQLException{
             Fault fault = new Fault(
@@ -101,6 +129,37 @@ public class FaultDAOImpl implements FaultDAO {
                     rs.getString("fault_type")
             );
             return fault;
+        }
+    }
+
+    class NodeCrashMapper implements RowMapper<NodeCrash> {
+        public NodeCrash mapRow(ResultSet rs, int rownNum) throws SQLException{
+            NodeCrash nc = new NodeCrash(
+                    rs.getInt("f_id"),
+                    rs.getString("username"),
+                    rs.getString("name"),
+                    rs.getInt("duration"),
+                    rs.getInt("scheduled_for"),
+                    rs.getString("fault_type"),
+                    rs.getInt("num_nodes")
+            );
+            return nc;
+        }
+    }
+
+    class NodeRestartMapper implements RowMapper<NodeRestart> {
+        public NodeRestart mapRow(ResultSet rs, int rownNum) throws SQLException{
+            NodeRestart nr = new NodeRestart(
+                    rs.getInt("f_id"),
+                    rs.getString("username"),
+                    rs.getString("name"),
+                    rs.getInt("duration"),
+                    rs.getInt("scheduled_for"),
+                    rs.getString("fault_type"),
+                    rs.getInt("num_nodes"),
+                    rs.getInt("frequency")
+            );
+            return nr;
         }
     }
 }

@@ -1,5 +1,7 @@
 package com.trigg.fault_injection.Controller;
 
+import com.trigg.fault_injection.Model.Fault;
+import com.trigg.fault_injection.Model.NodeCrash;
 import com.trigg.fault_injection.Service.DockerService;
 import com.trigg.fault_injection.Service.FaultService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +22,7 @@ public class DockerController {
         this.faultService = faultService;
     }
 
+    // Defines a fault that can be injected later
     @GetMapping("/define")
     public String defineFault(String type, String name, int duration){
         try{
@@ -34,5 +37,21 @@ public class DockerController {
             return "Error " + e.getMessage();
         }
     }
+
+    // Immediately injects a pre-defined fault
+    @GetMapping("/inject")
+    public String injectFault(String type, String name){
+        try{
+            //fault service call
+        } catch(IllegalArgumentException e){
+            return "Error " +e.getMessage();
+        }
+        return "";
+    }
+
+    //Lists all defined faults
+
+
+    //Schedules a fault for later execution
 
 }
