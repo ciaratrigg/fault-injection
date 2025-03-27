@@ -6,6 +6,9 @@ import com.trigg.fault_injection.Model.NodeCrash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class FaultService {
     private FaultFactory faultFactory;
@@ -18,6 +21,7 @@ public class FaultService {
     }
 
     public int defineFault(String type, String name, int duration){
+        //TODO duplicate name handling
         return faultFactory.defineFault(type, name, duration);
     }
 
@@ -29,5 +33,9 @@ public class FaultService {
             return faultDAO.selectNodeRestart(name);
         }
         return null;
+    }
+
+    public List<Fault> listAllFaults(){
+        return faultDAO.selectAllFaults();
     }
 }

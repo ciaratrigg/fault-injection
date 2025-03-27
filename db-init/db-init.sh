@@ -21,7 +21,7 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
   CREATE TABLE IF NOT EXISTS fault (
     f_id SERIAL PRIMARY KEY,
     username VARCHAR(50) REFERENCES user_account(username) ON DELETE CASCADE,
-    name VARCHAR(50),
+    name VARCHAR(50) UNIQUE,
     duration INT,
     scheduled_for INT,
     fault_type VARCHAR(50)
