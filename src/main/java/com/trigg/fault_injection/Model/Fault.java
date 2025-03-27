@@ -67,5 +67,15 @@ public class Fault {
         this.fault_type = fault_type;
     }
 
-
+    @Override
+    public String toString() {
+        return "Fault{" +
+                "f_id=" + f_id +
+                ", username='" + username + '\'' +
+                ", name='" + name + '\'' +
+                ", duration=" + duration +
+                ", scheduled_for=" + scheduled_for +
+                ", fault_type='" + fault_type + '\'' +
+                '}';
+    }
 }

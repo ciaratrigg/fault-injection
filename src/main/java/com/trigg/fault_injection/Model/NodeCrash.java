@@ -8,6 +8,7 @@ public class NodeCrash extends Fault {
         this.num_nodes = num_nodes;
     }
 
+
     public NodeCrash() {
     }
 
@@ -17,6 +18,19 @@ public class NodeCrash extends Fault {
 
     public void setNum_nodes(int num_nodes) {
         this.num_nodes = num_nodes;
+    }
+
+    @Override
+    public String toString() {
+        return "NodeCrash{" +
+                "num_nodes=" + num_nodes +
+                ", f_id=" + f_id +
+                ", username='" + username + '\'' +
+                ", name='" + name + '\'' +
+                ", duration=" + duration +
+                ", scheduled_for=" + scheduled_for +
+                ", fault_type='" + fault_type + '\'' +
+                '}';
     }
 
 }

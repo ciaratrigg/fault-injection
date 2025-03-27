@@ -42,11 +42,12 @@ public class DockerController {
     @GetMapping("/inject")
     public String injectFault(String type, String name){
         try{
-            //fault service call
+            Fault fault = faultService.selectRequestedFault(type, name);
+            return fault.toString();
+
         } catch(IllegalArgumentException e){
             return "Error " +e.getMessage();
         }
-        return "";
     }
 
     //Lists all defined faults
