@@ -43,10 +43,15 @@ public class DockerController {
     public String injectFault(String type, String name){
         try{
             Fault fault = faultService.selectRequestedFault(type, name);
-            return fault.toString();
+            if(fault != null) {
+                return fault.toString();
+            }
+            else{
+                return "Error: fault does not exist";
+            }
 
         } catch(IllegalArgumentException e){
-            return "Error " +e.getMessage();
+            return "Error " + e.getMessage();
         }
     }
 
