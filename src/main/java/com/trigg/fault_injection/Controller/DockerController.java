@@ -1,5 +1,6 @@
 package com.trigg.fault_injection.Controller;
 
+import com.github.dockerjava.api.model.Container;
 import com.trigg.fault_injection.Model.Fault;
 import com.trigg.fault_injection.Model.NodeCrash;
 import com.trigg.fault_injection.Service.DockerService;
@@ -61,6 +62,11 @@ public class DockerController {
     @GetMapping("/list")
     public List<Fault> listAllFaults(){
         return faultService.listAllFaults();
+    }
+
+    @GetMapping("/list-containers")
+    public List<String> listContainers(){
+        return dockerService.listContainerIds();
     }
 
 
