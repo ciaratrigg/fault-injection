@@ -8,6 +8,10 @@ public class CpuStressSidecar extends Fault{
         this.num_threads = num_threads;
     }
 
+    public CpuStressSidecar() {
+
+    }
+
     public int getNum_threads() {
         return num_threads;
     }

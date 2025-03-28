@@ -68,6 +68,21 @@ public class FaultDAOImpl implements FaultDAO {
     }
 
     @Override
+    public int insertCpuStressSidecar(CpuStressSidecar css) {
+        logger.info("Inserting cpu stress sidecar fault with details: " + css);
+
+        String insertFault = "INSERT INTO fault(username, name, duration, scheduled_for, fault_type) " +
+                "VALUES (?, ?, ?, ?, ?) RETURNING f_id";
+        Integer faultId = jdbcTemplate.queryForObject(insertFault, Integer.class,
+                css.getUsername(), css.getName(), css.getDuration(), css.getScheduled_for(), css.getFault_type());
+
+        String insertCpuStress = "INSERT INTO cpu_usage (f_id, num_threads) VALUES (?, ?, ?)";
+        jdbcTemplate.update(insertCpuStress, faultId, css.getNum_threads());
+
+        return faultId;
+    }
+
+    @Override
     public Fault selectFaultByName(String faultName) {
         logger.info("Retrieved fault with name " + faultName);
         String selectFault = "SELECT * FROM fault WHERE name = ?";
@@ -106,8 +121,17 @@ public class FaultDAOImpl implements FaultDAO {
         return jdbcTemplate.queryForObject(selectNodeRestart, new Object[]{name}, new NodeRestartMapper());
     }
 
+    @Override
+    public CpuStressSidecar selectCpuStressSidecar(String name) {
+        logger.info("Retrieved cpu stress sidecar fault with name " + name);
+        String selectCpuStressSidecar = "SELECT fault.f_id, fault.username, fault.name, fault.duration, " +
+                "fault.scheduled_for, fault.fault_type, node_restart.num_threads " +
+                "FROM fault JOIN cpu_usage on fault.f_id = cpu_usage.f_id WHERE name = ?";
+        return jdbcTemplate.queryForObject(selectCpuStressSidecar, new Object[]{name}, new CpuStressSidecarMapper());
+    }
+
     class FaultMapper implements RowMapper<Fault> {
-        public Fault mapRow(ResultSet rs, int rownNum) throws SQLException{
+        public Fault mapRow(ResultSet rs, int rowNum) throws SQLException{
             Fault fault = new Fault(
                     rs.getInt("f_id"),
                     rs.getString("username"),
@@ -121,7 +145,7 @@ public class FaultDAOImpl implements FaultDAO {
     }
 
     class NodeCrashMapper implements RowMapper<NodeCrash> {
-        public NodeCrash mapRow(ResultSet rs, int rownNum) throws SQLException{
+        public NodeCrash mapRow(ResultSet rs, int rowNum) throws SQLException{
             NodeCrash nc = new NodeCrash(
                     rs.getInt("f_id"),
                     rs.getString("username"),
@@ -136,7 +160,7 @@ public class FaultDAOImpl implements FaultDAO {
     }
 
     class NodeRestartMapper implements RowMapper<NodeRestart> {
-        public NodeRestart mapRow(ResultSet rs, int rownNum) throws SQLException{
+        public NodeRestart mapRow(ResultSet rs, int rowNum) throws SQLException{
             NodeRestart nr = new NodeRestart(
                     rs.getInt("f_id"),
                     rs.getString("username"),
@@ -148,6 +172,21 @@ public class FaultDAOImpl implements FaultDAO {
                     rs.getInt("frequency")
             );
             return nr;
+        }
+    }
+
+    class CpuStressSidecarMapper implements RowMapper<CpuStressSidecar> {
+        public CpuStressSidecar mapRow(ResultSet rs, int rowNum) throws SQLException{
+            CpuStressSidecar css = new CpuStressSidecar(
+                    rs.getInt("f_id"),
+                    rs.getString("username"),
+                    rs.getString("name"),
+                    rs.getInt("duration"),
+                    rs.getInt("scheduled_for"),
+                    rs.getString("fault_type"),
+                    rs.getInt("num_threads")
+            );
+            return css;
         }
     }
 }

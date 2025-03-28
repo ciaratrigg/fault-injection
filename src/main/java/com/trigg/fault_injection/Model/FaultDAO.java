@@ -11,8 +11,10 @@ public interface FaultDAO {
     List<Fault> selectAllFaults();
     int insertNodeCrash(NodeCrash nc);
     int insertNodeRestart(NodeRestart nr);
+    int insertCpuStressSidecar(CpuStressSidecar css);
     Fault selectFaultByName(String faultName);
     void insertFault(Fault fault);
     NodeCrash selectNodeCrash(String name);
     NodeRestart selectNodeRestart(String name);
+    CpuStressSidecar selectCpuStressSidecar(String name);
 }

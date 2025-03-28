@@ -1,16 +1,12 @@
 package com.trigg.fault_injection.Service;
 
-import com.trigg.fault_injection.Model.Fault;
-import com.trigg.fault_injection.Model.FaultDAO;
-import com.trigg.fault_injection.Model.NetworkDelay;
-import com.trigg.fault_injection.Model.NodeCrash;
-import com.trigg.fault_injection.Model.NodeRestart;
+import com.trigg.fault_injection.Model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class FaultFactory {
-
+//TODO change everything to LOGGER statements
     private FaultDAO dao;
 
     @Autowired
@@ -34,7 +30,7 @@ public class FaultFactory {
             NodeRestart fault = new NodeRestart();
             setCommonAttr(fault, type, name, duration);
             // TODO add other setters
-            int id = dao.insertNodeRestart(fault); //do i want to do anything with this return value?
+            int id = dao.insertNodeRestart(fault);
             System.out.println("Successfully inserted fault with id " + id);
 
         }
@@ -48,6 +44,9 @@ public class FaultFactory {
         }
         else if(type.equalsIgnoreCase("cpu-stress-sidecar")){
             System.out.println("Creating new CPU Stress Sidecar fault...");
+            CpuStressSidecar fault = new CpuStressSidecar();
+            setCommonAttr(fault, type, name, duration);
+            // TODO add other setters
 
         }
         else{
