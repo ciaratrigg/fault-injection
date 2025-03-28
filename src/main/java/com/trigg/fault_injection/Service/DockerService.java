@@ -1,6 +1,7 @@
 package com.trigg.fault_injection.Service;
 
 import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.model.Container;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -14,12 +15,19 @@ import java.util.logging.Logger;
 
 @Service
 public class DockerService {
+    //TODO: identify dependencies btwn classes and maybe refactor
     private final DockerClient dockerClient;
     private final ExecutorService executorService;
     private static final Logger LOGGER = Logger.getLogger(DockerService.class.getName());
 
     @Value("${docker.tgtlabels}")
     private String targetLabels;
+
+    @Value("${docker.network}")
+    private String targetNetwork;
+
+    @Value("${spring.application.name}")
+    private String appName;
 
 
     public DockerService(DockerClient dockerClient) {
@@ -114,6 +122,39 @@ public class DockerService {
         });
     }
 
+    //TODO sidecar container CPU overload
+    public void cpuStressSidecar(){
+        CreateContainerResponse container = dockerClient.createContainerCmd("busybox")
+                .withCmd("sh", "-c", "while true; do:; done")
+                .withNetworkMode(targetNetwork)
+                .exec();
+        dockerClient.startContainerCmd(container.getId()).exec();
+        LOGGER.info("CPU burner started in " + targetNetwork + container.getId());
+    }
+
+    //TODO dynamically connect to target system network
+    public void connectToTgtNetwork(){
+        try{
+            dockerClient.connectToNetworkCmd()
+                    .withContainerId(appName)
+                    .withNetworkId(targetNetwork)
+                    .exec();
+            LOGGER.info("Successfuly connected to " + targetNetwork);
+        } catch (Exception e) {
+            LOGGER.severe("Failed to connect faultinjection to " + targetNetwork);
+        }
+    }
+
+    public void disconnectFromTgtNetwork(){
+        try{
+            dockerClient.disconnectFromNetworkCmd()
+                    .withContainerId(appName)
+                    .withNetworkId(targetNetwork)
+                    .exec();
+        } catch (Exception e) {
+            LOGGER.severe("Failed to disconnect faultinjection to " + targetNetwork);
+        }
+    }
 
     // Gracefully shut down the ExecutorService when the application stops
     public void shutdown() {

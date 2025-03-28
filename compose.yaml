@@ -23,7 +23,6 @@ services:
       - 8080:8080
     networks:
       - spring-postgres
-      - mongo_mongo-cluster
     environment:
       - DB_URL=jdbc:postgresql://DB:5432/docker
       - DB_USER=docker
@@ -40,6 +39,4 @@ volumes:
 
 networks:
   spring-postgres:
-  mongo_mongo-cluster:
-    external: true
 

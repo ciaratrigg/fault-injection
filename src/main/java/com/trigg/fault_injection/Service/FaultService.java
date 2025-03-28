@@ -28,7 +28,9 @@ public class FaultService {
     }
 
     //TODO each of these should have more parameters
+    //todo add as more faults are created
     public void selectRequestedFault(String type, String name){
+        //dockerService.connectToTgtNetwork();
         if(type.equalsIgnoreCase("node-crash")){
             NodeCrash fault = faultDAO.selectNodeCrash(name);
             dockerService.stopContainersAsync(fault.getNum_nodes());
@@ -37,6 +39,7 @@ public class FaultService {
             NodeRestart fault = faultDAO.selectNodeRestart(name);
             dockerService.restartContainersAsync(fault.getNum_nodes());
         }
+        //dockerService.disconnectFromTgtNetwork();
     }
 
     public List<Fault> listAllFaults(){

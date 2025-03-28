@@ -10,21 +10,21 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class FaultFactory {
-    private DockerService dockerService;
+
     private FaultDAO dao;
 
     @Autowired
-    public FaultFactory(DockerService dockerService, FaultDAO dao){
-        this.dockerService = dockerService;
+    public FaultFactory(FaultDAO dao){
         this.dao = dao;
     }
 
+    //todo add more cases as more faults are created
     int defineFault(String type, String name, int duration){
         if(type.equalsIgnoreCase("node-crash")){
             System.out.println("Creating new Node Crash fault...");
             NodeCrash fault = new NodeCrash();
             setCommonAttr(fault, type, name, duration);
-            //add other setters
+            //TODO add other setters
             int id = dao.insertNodeCrash(fault); //do i want to do anything with this return value?
             System.out.println("Successfully inserted fault with id " + id);
 
@@ -33,7 +33,7 @@ public class FaultFactory {
             System.out.println("Creating new Node Restart fault...");
             NodeRestart fault = new NodeRestart();
             setCommonAttr(fault, type, name, duration);
-            //add other setters
+            // TODO add other setters
             int id = dao.insertNodeRestart(fault); //do i want to do anything with this return value?
             System.out.println("Successfully inserted fault with id " + id);
 
@@ -42,8 +42,12 @@ public class FaultFactory {
             System.out.println("Creating new Network Delay fault...");
             NetworkDelay fault = new NetworkDelay();
             setCommonAttr(fault, type, name, duration);
-            //add other setters
-            //add dao call
+            //TODO add other setters
+            //TODO add dao call
+
+        }
+        else if(type.equalsIgnoreCase("cpu-stress-sidecar")){
+            System.out.println("Creating new CPU Stress Sidecar fault...");
 
         }
         else{
