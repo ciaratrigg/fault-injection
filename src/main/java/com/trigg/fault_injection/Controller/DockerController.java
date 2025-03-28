@@ -1,5 +1,8 @@
 package com.trigg.fault_injection.Controller;
 
+import com.github.dockerjava.api.model.Container;
+import com.trigg.fault_injection.Model.Fault;
+import com.trigg.fault_injection.Model.NodeCrash;
 import com.trigg.fault_injection.Service.DockerService;
 import com.trigg.fault_injection.Service.FaultService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -20,17 +24,7 @@ public class DockerController {
         this.faultService = faultService;
     }
 
-
-    @GetMapping("/list")
-    public String listRunningContainers() {
-        String result = "";
-        List<String> containerIds = dockerService.listContainerIds();
-        for(String s : containerIds){
-            result = result + "Container ID: " + s + "\n";
-        }
-        return result;
-    }
-
+    // Defines a fault that can be injected later
     @GetMapping("/define")
     public String defineFault(String type, String name, int duration){
         try{
@@ -46,21 +40,25 @@ public class DockerController {
         }
     }
 
-    /*@GetMapping("/stop")
-    public String stopContainer() {
-        dockerService.stopContainersAsync();
-        return "Stopping a container asynchronously.";
-    }*/
+    // Immediately injects a pre-defined fault
+    //TODO: fault dne returns error
+    @GetMapping("/inject")
+    public void injectFault(String type, String name){
+        faultService.selectRequestedFault(type, name);
+    }
 
-   /* @GetMapping("/delay")
-    public String injectNetworkDelay() {
-        dockerService.injectNetworkDelay();
-        return "Injecting network delay asynchronously.";
-    }*/
+    //Lists all defined faults
+    @GetMapping("/list")
+    public List<Fault> listAllFaults(){
+        return faultService.listAllFaults();
+    }
 
-    /*@GetMapping("/restart")
-    public String restartContainer() {
-        dockerService.restartContainerAsync();
-        return "Restarting a container asynchronously.";
-    }*/
+    @GetMapping("/list-containers")
+    public List<String> listContainers(){
+        return dockerService.listContainerIds();
+    }
+
+
+    //Schedules a fault for later execution
+
 }

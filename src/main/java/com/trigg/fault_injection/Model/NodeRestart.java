@@ -28,4 +28,18 @@ public class NodeRestart extends Fault {
     public void setFrequency(int frequency) {
         this.frequency = frequency;
     }
+
+    @Override
+    public String toString() {
+        return "NodeRestart{" +
+                "num_nodes=" + num_nodes +
+                ", frequency=" + frequency +
+                ", f_id=" + f_id +
+                ", username='" + username + '\'' +
+                ", name='" + name + '\'' +
+                ", duration=" + duration +
+                ", scheduled_for=" + scheduled_for +
+                ", fault_type='" + fault_type + '\'' +
+                '}';
+    }
 }

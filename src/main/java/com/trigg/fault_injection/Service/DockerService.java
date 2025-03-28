@@ -2,6 +2,8 @@ package com.trigg.fault_injection.Service;
 
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.model.Container;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,9 +19,21 @@ public class DockerService {
     private final ExecutorService executorService;
     private static final Logger LOGGER = Logger.getLogger(DockerService.class.getName());
 
+    @Value("${docker.tgtlabels}")
+    private String targetLabels;
+
+
     public DockerService(DockerClient dockerClient) {
         this.dockerClient = dockerClient;
         this.executorService = Executors.newFixedThreadPool(5); // Limit concurrency to 5 threads
+    }
+
+    public List<Container> targetSystemContainers() {
+        System.out.println("***** Filtering containers with label: " + targetLabels);
+
+        return dockerClient.listContainersCmd()
+                .withLabelFilter(Collections.singletonList(targetLabels)) // Filtering by label
+                .exec();
     }
 
     public List<Container> listContainers() {
@@ -29,7 +43,7 @@ public class DockerService {
     }
 
     public List<String> listContainerIds() {
-        List<Container> allContainers = listContainers();
+        List<Container> allContainers = targetSystemContainers();
         List<String> containerIds = new ArrayList<>();
         for (Container container : allContainers) {
             containerIds.add(container.getId());
@@ -106,4 +120,5 @@ public class DockerService {
     public void shutdown() {
         executorService.shutdown();
     }
+
 }

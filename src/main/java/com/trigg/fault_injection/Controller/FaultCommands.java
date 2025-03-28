@@ -1,4 +1,4 @@
-package com.trigg.fault_injection;
+package com.trigg.fault_injection.Controller;
 
 import com.trigg.fault_injection.Service.FaultService;
 import org.springframework.beans.factory.annotation.Autowired;
