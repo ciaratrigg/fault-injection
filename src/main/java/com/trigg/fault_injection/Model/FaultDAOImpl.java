@@ -48,7 +48,7 @@ public class FaultDAOImpl implements FaultDAO {
                 "admin", nc.getName(), nc.getDuration(), 12, nc.getFault_type());
 
         String insertNodeCrash = "INSERT INTO node_crash (f_id, num_nodes) VALUES (?, ?)";
-        jdbcTemplate.update(insertNodeCrash, faultId, 3);
+        jdbcTemplate.update(insertNodeCrash, faultId, 1);
 
         return faultId;
     }

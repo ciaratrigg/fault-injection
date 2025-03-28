@@ -43,19 +43,8 @@ public class DockerController {
     // Immediately injects a pre-defined fault
     //TODO: fault dne returns error
     @GetMapping("/inject")
-    public String injectFault(String type, String name){
-        try{
-            Fault fault = faultService.selectRequestedFault(type, name);
-            if(fault != null) {
-                return fault.toString();
-            }
-            else{
-                return "Error: fault does not exist";
-            }
-
-        } catch(IllegalArgumentException e){
-            return "Error " + e.getMessage();
-        }
+    public void injectFault(String type, String name){
+        faultService.selectRequestedFault(type, name);
     }
 
     //Lists all defined faults

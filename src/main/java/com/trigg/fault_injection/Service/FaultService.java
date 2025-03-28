@@ -3,6 +3,7 @@ package com.trigg.fault_injection.Service;
 import com.trigg.fault_injection.Model.Fault;
 import com.trigg.fault_injection.Model.FaultDAOImpl;
 import com.trigg.fault_injection.Model.NodeCrash;
+import com.trigg.fault_injection.Model.NodeRestart;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,10 +14,12 @@ import java.util.List;
 public class FaultService {
     private FaultFactory faultFactory;
     private FaultDAOImpl faultDAO;
+    private DockerService dockerService;
 
     @Autowired
-    public FaultService(FaultFactory faultFactory, FaultDAOImpl faultDAO){
+    public FaultService(FaultFactory faultFactory, FaultDAOImpl faultDAO, DockerService dockerService){
         this.faultFactory = faultFactory;
+        this.dockerService = dockerService;
         this.faultDAO = faultDAO;
     }
 
@@ -25,14 +28,16 @@ public class FaultService {
         return faultFactory.defineFault(type, name, duration);
     }
 
-    public Fault selectRequestedFault(String type, String name){
+    //TODO each of these should have more parameters
+    public void selectRequestedFault(String type, String name){
         if(type.equalsIgnoreCase("node-crash")){
-            return faultDAO.selectNodeCrash(name);
+            NodeCrash fault = faultDAO.selectNodeCrash(name);
+            dockerService.stopContainersAsync(fault.getNum_nodes());
         }
         else if(type.equalsIgnoreCase("node-restart")){
-            return faultDAO.selectNodeRestart(name);
+            NodeRestart fault = faultDAO.selectNodeRestart(name);
+            dockerService.restartContainersAsync(fault.getNum_nodes());
         }
-        return null;
     }
 
     public List<Fault> listAllFaults(){
