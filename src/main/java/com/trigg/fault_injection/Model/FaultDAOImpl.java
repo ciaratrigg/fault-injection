@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import org.w3c.dom.Node;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -106,17 +105,6 @@ public class FaultDAOImpl implements FaultDAO {
                 "FROM fault JOIN node_restart on fault.f_id = node_crash.f_id WHERE name = ?";
         return jdbcTemplate.queryForObject(selectNodeRestart, new Object[]{name}, new NodeRestartMapper());
     }
-
-    /*
-     @Override
-    public Internship selectInternshipById(int jobId) {
-        logger.info("Retrieved internship with id " + jobId);
-        String SQL = "SELECT job.j_id AS job_id, job.email, job.job_title, job.company, job.city, job.state, " +
-                "internship.hours, internship.wage " +
-                "FROM job JOIN internship ON job.j_id = internship.id WHERE job.j_id = ?";
-        return jdbcTemplate.queryForObject(SQL, new Object[]{jobId}, new InternshipMapper());
-    }
-     */
 
     class FaultMapper implements RowMapper<Fault> {
         public Fault mapRow(ResultSet rs, int rownNum) throws SQLException{

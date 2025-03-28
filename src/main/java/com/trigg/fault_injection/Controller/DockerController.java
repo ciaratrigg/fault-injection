@@ -1,8 +1,6 @@
 package com.trigg.fault_injection.Controller;
 
-import com.github.dockerjava.api.model.Container;
 import com.trigg.fault_injection.Model.Fault;
-import com.trigg.fault_injection.Model.NodeCrash;
 import com.trigg.fault_injection.Service.DockerService;
 import com.trigg.fault_injection.Service.FaultService;
 import org.springframework.web.bind.annotation.GetMapping;
