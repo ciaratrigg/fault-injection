@@ -14,6 +14,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/docker")
 public class DockerController {
+
+    //TODO i think i prefer the idea of having a different method for each inject/"faultType"
+    // rather than using if statements all throughout
+
     private final DockerService dockerService;
     private FaultService faultService;
 

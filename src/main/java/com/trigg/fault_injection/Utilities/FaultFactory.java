@@ -1,5 +1,6 @@
-package com.trigg.fault_injection.Service;
+package com.trigg.fault_injection.Utilities;
 
+import com.trigg.fault_injection.Database.FaultDAO;
 import com.trigg.fault_injection.Model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,7 +16,7 @@ public class FaultFactory {
     }
 
     //todo add more cases as more faults are created
-    int defineFault(String type, String name, int duration){
+    public int defineFault(String type, String name, int duration){
         if(type.equalsIgnoreCase("node-crash")){
             System.out.println("Creating new Node Crash fault...");
             NodeCrash fault = new NodeCrash();
@@ -47,7 +48,8 @@ public class FaultFactory {
             CpuStressSidecar fault = new CpuStressSidecar();
             setCommonAttr(fault, type, name, duration);
             // TODO add other setters
-
+            int id = dao.insertCpuStressSidecar(fault);
+            System.out.println("Successfully inserted fault with id " + id);
         }
         else{
             System.out.println("Specified fault type does not exist.");

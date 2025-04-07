@@ -20,11 +20,19 @@ public class DockerService {
     private final ExecutorService executorService;
     private static final Logger LOGGER = Logger.getLogger(DockerService.class.getName());
 
+    @Value("${docker.network}")
+    private String targetNetwork;
+
     @Value("${docker.tgtlabels}")
     private String targetLabels;
 
-    @Value("${docker.network}")
-    private String targetNetwork;
+    public List<Container> targetSystemContainers() {
+        System.out.println("Filtering containers with label: " + targetLabels);
+
+        return dockerClient.listContainersCmd()
+                .withLabelFilter(Collections.singletonList(targetLabels)) // Filtering by label
+                .exec();
+    }
 
     @Value("${spring.application.name}")
     private String appName;
@@ -33,14 +41,6 @@ public class DockerService {
     public DockerService(DockerClient dockerClient) {
         this.dockerClient = dockerClient;
         this.executorService = Executors.newFixedThreadPool(5); // Limit concurrency to 5 threads
-    }
-
-    public List<Container> targetSystemContainers() {
-        System.out.println("***** Filtering containers with label: " + targetLabels);
-
-        return dockerClient.listContainersCmd()
-                .withLabelFilter(Collections.singletonList(targetLabels)) // Filtering by label
-                .exec();
     }
 
     public List<Container> listContainers() {
