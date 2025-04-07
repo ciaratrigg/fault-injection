@@ -18,6 +18,21 @@ public class FaultCommands {
         this.faultService = faultService;
     }
 
+    /*
+    default value if not given :
+
+    @ShellComponent
+    public class MyCommands {
+
+	@ShellMethod(key = "hello-world")
+	public String helloWorld(
+		@ShellOption(defaultValue = "spring") String arg
+	) {
+		return "Hello world " + arg;
+	}
+}
+     */
+
     @ShellMethod(key = "define")
     public String defineFault(String type, String name, int duration){
         try{

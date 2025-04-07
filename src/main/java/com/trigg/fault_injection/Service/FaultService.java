@@ -1,9 +1,10 @@
 package com.trigg.fault_injection.Service;
 
 import com.trigg.fault_injection.Model.Fault;
-import com.trigg.fault_injection.Model.FaultDAOImpl;
+import com.trigg.fault_injection.Database.FaultDAOImpl;
 import com.trigg.fault_injection.Model.NodeCrash;
 import com.trigg.fault_injection.Model.NodeRestart;
+import com.trigg.fault_injection.Utilities.FaultFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +29,9 @@ public class FaultService {
     }
 
     //TODO each of these should have more parameters
+    //todo add as more faults are created
     public void selectRequestedFault(String type, String name){
+        //dockerService.connectToTgtNetwork();
         if(type.equalsIgnoreCase("node-crash")){
             NodeCrash fault = faultDAO.selectNodeCrash(name);
             dockerService.stopContainersAsync(fault.getNum_nodes());
@@ -37,6 +40,7 @@ public class FaultService {
             NodeRestart fault = faultDAO.selectNodeRestart(name);
             dockerService.restartContainersAsync(fault.getNum_nodes());
         }
+        //dockerService.disconnectFromTgtNetwork();
     }
 
     public List<Fault> listAllFaults(){

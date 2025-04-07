@@ -23,14 +23,13 @@ services:
       - 8080:8080
     networks:
       - spring-postgres
-      - mongo_mongo-cluster
     environment:
       - DB_URL=jdbc:postgresql://DB:5432/docker
       - DB_USER=docker
       - DB_PASSWORD=pswd-docker
-      - DOCKER_HOST=unix:///var/run/docker.sock  # Ensure Java uses the correct Docker host
+      - DOCKER_HOST=unix:///var/run/docker.sock
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock  # Mount Docker socket inside the container
+      - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - DB
     restart: always
@@ -40,6 +39,4 @@ volumes:
 
 networks:
   spring-postgres:
-  mongo_mongo-cluster:
-    external: true
 

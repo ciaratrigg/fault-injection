@@ -1,30 +1,27 @@
-package com.trigg.fault_injection.Service;
+package com.trigg.fault_injection.Utilities;
 
-import com.trigg.fault_injection.Model.Fault;
-import com.trigg.fault_injection.Model.FaultDAO;
-import com.trigg.fault_injection.Model.NetworkDelay;
-import com.trigg.fault_injection.Model.NodeCrash;
-import com.trigg.fault_injection.Model.NodeRestart;
+import com.trigg.fault_injection.Database.FaultDAO;
+import com.trigg.fault_injection.Model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class FaultFactory {
-    private DockerService dockerService;
+//TODO change everything to LOGGER statements
     private FaultDAO dao;
 
     @Autowired
-    public FaultFactory(DockerService dockerService, FaultDAO dao){
-        this.dockerService = dockerService;
+    public FaultFactory(FaultDAO dao){
         this.dao = dao;
     }
 
-    int defineFault(String type, String name, int duration){
+    //todo add more cases as more faults are created
+    public int defineFault(String type, String name, int duration){
         if(type.equalsIgnoreCase("node-crash")){
             System.out.println("Creating new Node Crash fault...");
             NodeCrash fault = new NodeCrash();
             setCommonAttr(fault, type, name, duration);
-            //add other setters
+            //TODO add other setters
             int id = dao.insertNodeCrash(fault); //do i want to do anything with this return value?
             System.out.println("Successfully inserted fault with id " + id);
 
@@ -33,8 +30,8 @@ public class FaultFactory {
             System.out.println("Creating new Node Restart fault...");
             NodeRestart fault = new NodeRestart();
             setCommonAttr(fault, type, name, duration);
-            //add other setters
-            int id = dao.insertNodeRestart(fault); //do i want to do anything with this return value?
+            // TODO add other setters
+            int id = dao.insertNodeRestart(fault);
             System.out.println("Successfully inserted fault with id " + id);
 
         }
@@ -42,9 +39,17 @@ public class FaultFactory {
             System.out.println("Creating new Network Delay fault...");
             NetworkDelay fault = new NetworkDelay();
             setCommonAttr(fault, type, name, duration);
-            //add other setters
-            //add dao call
+            //TODO add other setters
+            //TODO add dao call
 
+        }
+        else if(type.equalsIgnoreCase("cpu-stress-sidecar")){
+            System.out.println("Creating new CPU Stress Sidecar fault...");
+            CpuStressSidecar fault = new CpuStressSidecar();
+            setCommonAttr(fault, type, name, duration);
+            // TODO add other setters
+            int id = dao.insertCpuStressSidecar(fault);
+            System.out.println("Successfully inserted fault with id " + id);
         }
         else{
             System.out.println("Specified fault type does not exist.");
