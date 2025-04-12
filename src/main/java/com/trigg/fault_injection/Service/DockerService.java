@@ -125,7 +125,7 @@ public class DockerService {
     //TODO sidecar container CPU overload
     public void cpuStressSidecar(){
         CreateContainerResponse container = dockerClient.createContainerCmd("busybox")
-                .withCmd("sh", "-c", "while true; do:; done")
+                .withCmd("sh", "-c", "while true; do :; done")
                 .withNetworkMode(targetNetwork)
                 .exec();
         dockerClient.startContainerCmd(container.getId()).exec();

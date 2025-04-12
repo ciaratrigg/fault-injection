@@ -1,5 +1,6 @@
 package com.trigg.fault_injection.Service;
 
+import com.trigg.fault_injection.Model.CpuStressSidecar;
 import com.trigg.fault_injection.Model.Fault;
 import com.trigg.fault_injection.Database.FaultDAOImpl;
 import com.trigg.fault_injection.Model.NodeCrash;
@@ -39,6 +40,10 @@ public class FaultService {
         else if(type.equalsIgnoreCase("node-restart")){
             NodeRestart fault = faultDAO.selectNodeRestart(name);
             dockerService.restartContainersAsync(fault.getNum_nodes());
+        }
+        else if(type.equalsIgnoreCase("cpu-stress-sc")){
+            CpuStressSidecar fault = faultDAO.selectCpuStressSidecar(name);
+            dockerService.cpuStressSidecar();
         }
         //dockerService.disconnectFromTgtNetwork();
     }

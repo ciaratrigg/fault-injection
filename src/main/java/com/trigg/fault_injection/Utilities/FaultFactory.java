@@ -43,7 +43,7 @@ public class FaultFactory {
             //TODO add dao call
 
         }
-        else if(type.equalsIgnoreCase("cpu-stress-sidecar")){
+        else if(type.equalsIgnoreCase("cpu-stress-sc")){
             System.out.println("Creating new CPU Stress Sidecar fault...");
             CpuStressSidecar fault = new CpuStressSidecar();
             setCommonAttr(fault, type, name, duration);

@@ -80,7 +80,7 @@ public class FaultDAOImpl implements FaultDAO {
         Integer faultId = jdbcTemplate.queryForObject(insertFault, Integer.class,
                 css.getUsername(), css.getName(), css.getDuration(), css.getScheduled_for(), css.getFault_type());
 
-        String insertCpuStress = "INSERT INTO cpu_usage (f_id, num_threads) VALUES (?, ?, ?)";
+        String insertCpuStress = "INSERT INTO cpu_usage (f_id, num_threads) VALUES (?, ?)";
         jdbcTemplate.update(insertCpuStress, faultId, css.getNum_threads());
 
         return faultId;
@@ -129,7 +129,7 @@ public class FaultDAOImpl implements FaultDAO {
     public CpuStressSidecar selectCpuStressSidecar(String name) {
         logger.info("Retrieved cpu stress sidecar fault with name " + name);
         String selectCpuStressSidecar = "SELECT fault.f_id, fault.username, fault.name, fault.duration, " +
-                "fault.scheduled_for, fault.fault_type, node_restart.num_threads " +
+                "fault.scheduled_for, fault.fault_type, cpu_usage.num_threads " +
                 "FROM fault JOIN cpu_usage on fault.f_id = cpu_usage.f_id WHERE name = ?";
         return jdbcTemplate.queryForObject(selectCpuStressSidecar, new Object[]{name}, new CpuStressSidecarMapper());
     }
