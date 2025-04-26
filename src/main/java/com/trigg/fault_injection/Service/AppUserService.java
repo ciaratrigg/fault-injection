@@ -67,4 +67,12 @@ public class AppUserService implements UserDetailsService {
         userDAO.updateUserRole(id, "ROLE_USER");
     }
 
+    public List<String> getPendingUsers(){
+        return userDAO.getPendingUsers();
+    }
+
+    public void approveUser(int id){
+        userDAO.approveUser(id);
+    }
+
 }

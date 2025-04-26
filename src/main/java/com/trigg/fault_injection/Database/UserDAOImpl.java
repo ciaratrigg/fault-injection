@@ -102,6 +102,18 @@ public class UserDAOImpl implements UserDAO{
         jdbcTemplate.update(insertSql, id, newRole);
     }
 
+    @Override
+    public List<String> getPendingUsers() {
+        String selectPendingUsers = "SELECT username from user_account WHERE approved = FALSE";
+        return jdbcTemplate.query(selectPendingUsers, (rs,rowNum) -> rs.getString("username"));
+    }
+
+    @Override
+    public void approveUser(int id) {
+        String updateApproval = "UPDATE user_account SET approved = true WHERE u_id = ?";
+        jdbcTemplate.update(updateApproval, id);
+    }
+
     class UserAccountMapper implements RowMapper<UserAccount> {
         public UserAccount mapRow(ResultSet rs, int rowNum) throws SQLException {
             UserAccount account = new UserAccount(

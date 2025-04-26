@@ -17,6 +17,8 @@ public interface UserDAO {
     UserAccount selectAccount(String username);
     String getUserRole(int id);
     void updateUserRole(int id, String newRole);
+    List<String> getPendingUsers();
+    void approveUser(int id);
 
 
 }

@@ -14,13 +14,11 @@ import java.util.List;
 
 @ShellComponent
 public class AdminCommands {
-    private JdbcTemplate jdbcTemplate;
     private ShellAuthContext authContext;
     private AppUserService appUserService;
 
     @Autowired
-    public AdminCommands(JdbcTemplate jdbcTemplate, ShellAuthContext authContext, AppUserService appUserService) {
-        this.jdbcTemplate = jdbcTemplate;
+    public AdminCommands(ShellAuthContext authContext, AppUserService appUserService) {
         this.authContext = authContext;
         this.appUserService = appUserService;
     }
@@ -75,10 +73,7 @@ public class AdminCommands {
             return "Only admins can view pending users.";
         }
 
-        List<String> pendingUsers = jdbcTemplate.query(
-                "SELECT username FROM user_account WHERE approved = FALSE",
-                (rs, rowNum) -> rs.getString("username")
-        );
+        List<String> pendingUsers = appUserService.getPendingUsers();
 
         if (pendingUsers.isEmpty()) {
             return "No users awaiting approval.";
@@ -98,18 +93,16 @@ public class AdminCommands {
             return "Only admins can approve users.";
         }
 
-        Integer uid;
-        try {
-            uid = jdbcTemplate.queryForObject(
-                    "SELECT u_id FROM user_account WHERE username = ?",
-                    Integer.class,
-                    username
-            );
-        } catch (EmptyResultDataAccessException e) {
-            return "User not found: " + username;
+        UserAccount account = appUserService.retrieveAccount(username);
+        if(account == null){
+            return "User not found";
         }
-
-        jdbcTemplate.update("UPDATE user_account SET approved = true WHERE u_id = ?", uid);
+        else if(account.isApproved()){
+            return "Account has already been approved";
+        }
+        else{
+            appUserService.approveUser(account.getId());
+        }
 
         return "User " + username + " approved successfully.";
     }
