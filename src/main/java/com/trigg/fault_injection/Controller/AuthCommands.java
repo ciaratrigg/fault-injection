@@ -9,6 +9,7 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 
+import java.util.Collections;
 import java.util.List;
 
 @ShellComponent
@@ -18,8 +19,7 @@ public class AuthCommands {
     private final AppUserService appUserService;
 
     @Autowired
-    public AuthCommands(PasswordEncoder passwordEncoder,
-                        ShellAuthContext authContext, AppUserService appUserService) {
+    public AuthCommands(PasswordEncoder passwordEncoder, ShellAuthContext authContext, AppUserService appUserService) {
         this.passwordEncoder = passwordEncoder;
         this.authContext = authContext;
         this.appUserService = appUserService;
@@ -55,9 +55,9 @@ public class AuthCommands {
                 return "Account not approved. Please contact an admin.";
             }
 
-            List<String> userRoles = appUserService.getUserRoles(account.getId());
+            String userRole = appUserService.getUserRole(account.getId());
 
-            authContext.login(username, userRoles);
+            authContext.login(username, Collections.singletonList(userRole));
             return "Login successful. Welcome, " + username + "!";
         }
     }

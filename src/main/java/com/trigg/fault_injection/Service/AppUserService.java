@@ -55,9 +55,16 @@ public class AppUserService implements UserDetailsService {
         return userDAO.selectAccount(username);
     }
 
-    //get roles
-    public List<String> getUserRoles(int id){
-        return userDAO.getUserRoles(id);
+    public String getUserRole(int id){
+        return userDAO.getUserRole(id);
+    }
+
+    public void upgradeUserRole(int id){
+        userDAO.updateUserRole(id, "ROLE_ADMIN");
+    }
+
+    public void downgradeUserRole(int id){
+        userDAO.updateUserRole(id, "ROLE_USER");
     }
 
 }

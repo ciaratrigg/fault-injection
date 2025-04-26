@@ -15,6 +15,8 @@ public interface UserDAO {
     Integer checkExistingUser(String username);
     void registerUserAccount(String username, String password);
     UserAccount selectAccount(String username);
-    List<String> getUserRoles(int id);
+    String getUserRole(int id);
+    void updateUserRole(int id, String newRole);
+
 
 }

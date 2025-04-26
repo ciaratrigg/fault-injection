@@ -1,5 +1,7 @@
 package com.trigg.fault_injection.Controller;
 
+import com.trigg.fault_injection.Model.UserAccount;
+import com.trigg.fault_injection.Service.AppUserService;
 import com.trigg.fault_injection.Utilities.ShellAuthContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -12,55 +14,61 @@ import java.util.List;
 
 @ShellComponent
 public class AdminCommands {
-    private final JdbcTemplate jdbcTemplate;
-    private final ShellAuthContext authContext;
+    private JdbcTemplate jdbcTemplate;
+    private ShellAuthContext authContext;
+    private AppUserService appUserService;
 
     @Autowired
-    public AdminCommands(JdbcTemplate jdbcTemplate, ShellAuthContext authContext) {
+    public AdminCommands(JdbcTemplate jdbcTemplate, ShellAuthContext authContext, AppUserService appUserService) {
         this.jdbcTemplate = jdbcTemplate;
         this.authContext = authContext;
+        this.appUserService = appUserService;
     }
 
-    @ShellMethod("Assign a role to a user")
-    public String assignRole(@ShellOption String username, @ShellOption String role) {
+    @ShellMethod("Upgrade user permissions")
+    public String upgradeUser(@ShellOption String username) {
         if (!checkAdmin()) {
             return "Only admins can assign roles.";
         }
 
-        Integer uid;
-        try {
-            uid = jdbcTemplate.queryForObject(
-                    "SELECT u_id FROM user_account WHERE username = ?",
-                    Integer.class,
-                    username
-            );
-        } catch (EmptyResultDataAccessException e) {
-            return "User not found: " + username;
+        UserAccount account = appUserService.retrieveAccount(username);
+        if(account == null){
+            return "User " + username + " not found.";
         }
-
-        // Normalize the role (optional, but helps reduce errors)
-        String normalizedRole = role.toUpperCase();
-        if (!normalizedRole.startsWith("ROLE_")) {
-            normalizedRole = "ROLE_" + normalizedRole;
+        else{
+            String currentRole = appUserService.getUserRole(account.getId());
+            if(currentRole.equalsIgnoreCase("ROLE_ADMIN")){
+                return "User " + username + " is already an admin.";
+            }
+            else{
+                appUserService.upgradeUserRole(account.getId());
+            }
         }
-
-        int count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM authority WHERE u_id = ? AND role = ?",
-                Integer.class,
-                uid, normalizedRole
-        );
-
-        if (count > 0) {
-            return "User already has role " + normalizedRole;
-        }
-
-        jdbcTemplate.update(
-                "INSERT INTO authority (u_id, role) VALUES (?, ?)",
-                uid, normalizedRole
-        );
-
-        return "Assigned role " + normalizedRole + " to " + username;
+        return "Assigned ROLE_ADMIN to " + username;
     }
+
+    @ShellMethod("Downgrade user permissions")
+    public String downgradeUser(@ShellOption String username){
+        if (!checkAdmin()) {
+            return "Only admins can assign roles.";
+        }
+
+        UserAccount account = appUserService.retrieveAccount(username);
+        if(account == null){
+            return "User " + username + " not found.";
+        }
+        else{
+            String currentRole = appUserService.getUserRole(account.getId());
+            if(currentRole.equalsIgnoreCase("ROLE_USER")){
+                return "User " + username + " is already a user.";
+            }
+            else{
+                appUserService.downgradeUserRole(account.getId());
+            }
+        }
+        return "Assigned ROLE_USER to " + username;
+    }
+
     @ShellMethod("Users awaiting approval")
     public String pendingUsers() {
         if (!checkAdmin()) {

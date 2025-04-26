@@ -88,13 +88,18 @@ public class UserDAOImpl implements UserDAO{
     }
 
     @Override
-    public List<String> getUserRoles(int id) {
-        List<String> roles = jdbcTemplate.query(
-                "SELECT role FROM authority WHERE u_id = ?",
-                new Object[]{id},
-                (rs, rowNum) -> rs.getString("role"));
+    public String getUserRole(int id) {
+        String selectRole = "SELECT role FROM authority WHERE u_id = ?";
+        return jdbcTemplate.queryForObject(selectRole, String.class, id);
+    }
 
-        return roles;
+    @Override
+    public void updateUserRole(int id, String newRole) {
+        String deleteSql = "DELETE FROM authority WHERE u_id = ?";
+        String insertSql = "INSERT INTO authority (u_id, role) VALUES (?, ?)";
+
+        jdbcTemplate.update(deleteSql, id);
+        jdbcTemplate.update(insertSql, id, newRole);
     }
 
     class UserAccountMapper implements RowMapper<UserAccount> {
