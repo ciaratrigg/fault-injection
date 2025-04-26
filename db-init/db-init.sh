@@ -101,7 +101,5 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
   ALTER TABLE node_crash OWNER TO docker;
   ALTER TABLE packet_loss OWNER TO docker;
 
-  INSERT INTO user_account (username) VALUES ('admin') ON CONFLICT DO NOTHING;
-
 EOSQL
 
