@@ -34,7 +34,7 @@ public class AuthController {
         user.setUsername(username);
         user.setPassword(password);
 
-        userDAO.createAccount(user, List.of("ROLE_USER")); // default role
+        userDAO.createAccount(user, List.of("ROLE_USER"));
 
         return ResponseEntity.ok("User registered.");
     }
