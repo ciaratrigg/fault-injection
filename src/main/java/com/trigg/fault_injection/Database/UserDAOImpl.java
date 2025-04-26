@@ -1,14 +1,19 @@
 package com.trigg.fault_injection.Database;
 
+import com.trigg.fault_injection.Model.Fault;
 import com.trigg.fault_injection.Model.UserAccount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -52,5 +57,55 @@ public class UserDAOImpl implements UserDAO{
                 }
         );
         return users.stream().findFirst();
+    }
+
+    @Override
+    public Integer checkExistingUser(String username) {
+        return jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM user_account WHERE username = ?",
+                Integer.class, username);
+    }
+
+    @Override
+    public void registerUserAccount(String username, String password) {
+        jdbcTemplate.update(
+                "INSERT INTO user_account (username, password, approved) VALUES (?, ?, false)",
+                username, password);
+
+        Integer uid = jdbcTemplate.queryForObject(
+                "SELECT u_id FROM user_account WHERE username = ?",
+                Integer.class, username);
+
+        jdbcTemplate.update(
+                "INSERT INTO authority (u_id, role) VALUES (?, ?)",
+                uid, "ROLE_USER");
+    }
+
+    @Override
+    public UserAccount selectAccount(String username) {
+        String selectAccount = "SELECT * FROM user_account WHERE username = ?";
+        return jdbcTemplate.queryForObject(selectAccount, new Object[]{username}, new UserAccountMapper());
+    }
+
+    @Override
+    public List<String> getUserRoles(int id) {
+        List<String> roles = jdbcTemplate.query(
+                "SELECT role FROM authority WHERE u_id = ?",
+                new Object[]{id},
+                (rs, rowNum) -> rs.getString("role"));
+
+        return roles;
+    }
+
+    class UserAccountMapper implements RowMapper<UserAccount> {
+        public UserAccount mapRow(ResultSet rs, int rowNum) throws SQLException {
+            UserAccount account = new UserAccount(
+                    rs.getInt("u_id"),
+                    rs.getString("username"),
+                    rs.getString("password"),
+                    rs.getBoolean("approved")
+            );
+            return account;
+        }
     }
 }

@@ -12,4 +12,9 @@ public interface UserDAO {
     void setDataSource(DataSource dataSource);
     void createAccount(UserAccount user, List<String> roles);
     Optional<UserAccount> findByUsername(String username);
+    Integer checkExistingUser(String username);
+    void registerUserAccount(String username, String password);
+    UserAccount selectAccount(String username);
+    List<String> getUserRoles(int id);
+
 }

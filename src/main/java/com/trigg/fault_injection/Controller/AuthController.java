@@ -4,6 +4,7 @@ import com.trigg.fault_injection.Database.UserDAO;
 import com.trigg.fault_injection.Model.UserAccount;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,11 +19,13 @@ import java.util.Map;
 public class AuthController {
     private UserDAO userDAO;
     private PasswordEncoder passwordEncoder;
+    private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public AuthController(UserDAO userDAO, PasswordEncoder passwordEncoder){
+    public AuthController(UserDAO userDAO, PasswordEncoder passwordEncoder, JdbcTemplate jdbcTemplate){
         this.userDAO = userDAO;
         this.passwordEncoder = passwordEncoder;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @PostMapping("/register")

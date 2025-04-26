@@ -16,18 +16,18 @@ import java.util.List;
 @Service
 public class AppUserService implements UserDetailsService {
 
-    private UserDAO userDao;
+    private UserDAO userDAO;
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
     public AppUserService(UserDAO userDAO, JdbcTemplate jdbcTemplate){
-        this.userDao = userDAO;
+        this.userDAO = userDAO;
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserAccount user = userDao.findByUsername(username)
+        UserAccount user = userDAO.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         List<GrantedAuthority> authorities = jdbcTemplate.query(
@@ -42,4 +42,22 @@ public class AppUserService implements UserDetailsService {
                 authorities
         );
     }
+
+    public Integer checkExistingUser(String username){
+        return userDAO.checkExistingUser(username);
+    }
+
+    public void registerUserAccount(String username, String password){
+        userDAO.registerUserAccount(username, password);
+    }
+
+    public UserAccount retrieveAccount(String username){
+        return userDAO.selectAccount(username);
+    }
+
+    //get roles
+    public List<String> getUserRoles(int id){
+        return userDAO.getUserRoles(id);
+    }
+
 }

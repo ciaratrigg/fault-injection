@@ -10,7 +10,8 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
   CREATE TABLE IF NOT EXISTS user_account (
     u_id SERIAL PRIMARY KEY,
     username VARCHAR(20) UNIQUE,
-    password VARCHAR(100)
+    password VARCHAR(100),
+    approved boolean DEFAULT FALSE
   );
 
   CREATE TABLE IF NOT EXISTS authority (
