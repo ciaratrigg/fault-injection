@@ -12,22 +12,24 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class DockerConfig {
-
-
     @Bean
     DockerClient dockerClient() {
-        // create an instance of DockerClient Config to tell the library how to access docker
-        DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
+        // Specify the location of the Docker daemon
+        DockerClientConfig config = DefaultDockerClientConfig
+                .createDefaultConfigBuilder()
                 .withDockerHost("unix:///var/run/docker.sock")
                 .build();
 
-        //Instantiate an HTTP client
-        DockerHttpClient httpClient = new ApacheDockerHttpClient.Builder()
+        // Instantiate an HTTP client
+        DockerHttpClient httpClient = new ApacheDockerHttpClient
+                .Builder()
                 .dockerHost(config.getDockerHost())
                 .build();
 
-        // create a Docker client using the config and http config
-        DockerClient client = DockerClientImpl.getInstance(config, httpClient);
+        // Create a Docker client using the config and httpClient
+        DockerClient client = DockerClientImpl
+                .getInstance(config, httpClient);
+
         return client;
     }
 }
