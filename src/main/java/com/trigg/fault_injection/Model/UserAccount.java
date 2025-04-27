@@ -6,10 +6,10 @@ public class UserAccount {
     private String password;
     private boolean approved;
 
-    public UserAccount(int id, String password, String username, boolean approved) {
+    public UserAccount(int id, String username, String password, boolean approved) {
         this.id = id;
-        this.password = password;
         this.username = username;
+        this.password = password;
         this.approved = approved;
     }
 

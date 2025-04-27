@@ -34,7 +34,7 @@ public class UserDAOImpl implements UserDAO{
         String insertAcct = "INSERT INTO user_account (username, password) VALUES (?, ?)";
         jdbcTemplate.update(insertAcct, user.getUsername(), user.getPassword());
 
-        String selectUser = "SELEC u_id from user_account WHERE username = ?";
+        String selectUser = "SELECT u_id from user_account WHERE username = ?";
         Integer uid = jdbcTemplate.queryForObject(selectUser, new Object[]{user.getUsername()}, Integer.class);
 
         if(uid != null){
