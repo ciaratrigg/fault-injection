@@ -63,7 +63,7 @@ public class AuthCommands {
 
                 String userRole = appUserService.getUserRole(account.getId());
 
-                authContext.login(username, Collections.singletonList(userRole));
+                authContext.login(username, userRole);
                 return "Login successful. Welcome, " + username + "!";
             }
         }

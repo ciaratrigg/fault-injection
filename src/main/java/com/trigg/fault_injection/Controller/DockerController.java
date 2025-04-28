@@ -14,9 +14,6 @@ import java.util.List;
 @RequestMapping("/api/docker")
 public class DockerController {
 
-    //TODO i think i prefer the idea of having a different method for each inject/"faultType"
-    // rather than using if statements all throughout
-
     private final DockerService dockerService;
     private FaultService faultService;
 
@@ -24,7 +21,7 @@ public class DockerController {
         this.dockerService = dockerService;
         this.faultService = faultService;
     }
-
+/*
     // Defines a fault that can be injected later
     @GetMapping("/define")
     public String defineFault(String type, String name, int duration){
@@ -61,5 +58,5 @@ public class DockerController {
 
 
     //Schedules a fault for later execution
-
+*/
 }

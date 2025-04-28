@@ -4,6 +4,12 @@ import com.trigg.fault_injection.Database.FaultDAO;
 import com.trigg.fault_injection.Service.DockerService;
 
 public interface Fault {
+    String getUsername();
+    String getName();
+    int getDuration();
+    int getScheduled_for();
+    String getFault_type();
+    int getF_id();
     void inject(DockerService dockerService);
     int insert(FaultDAO faultDAO);
     void setUniqueAttr(int num_nodes);

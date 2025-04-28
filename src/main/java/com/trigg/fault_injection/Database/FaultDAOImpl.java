@@ -1,15 +1,14 @@
 package com.trigg.fault_injection.Database;
 
-import com.trigg.fault_injection.Model.CpuStressSidecar;
-import com.trigg.fault_injection.Model.Fault;
-import com.trigg.fault_injection.Model.NodeCrash;
-import com.trigg.fault_injection.Model.NodeRestart;
+import com.fasterxml.jackson.databind.ser.Serializers;
+import com.trigg.fault_injection.Model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.w3c.dom.Node;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -34,9 +33,16 @@ public class FaultDAOImpl implements FaultDAO {
     public List<Fault> selectAllFaults() {
         List<Fault> faults = new ArrayList<>();
         logger.info("Retrieved all faults");
+        //TODO these all need to be joins
 
-        String selectAllFaults = "SELECT * FROM fault";
-        faults.addAll(jdbcTemplate.query(selectAllFaults, new FaultMapper()));
+        String selectAllNodeCrash = "SELECT * FROM node-crash";
+        faults.addAll(jdbcTemplate.query(selectAllNodeCrash, new NodeCrashMapper()));
+
+        String selectAllCpuStress = "SELECT * FROM cpu_usage";
+        faults.addAll(jdbcTemplate.query(selectAllCpuStress, new CpuStressSidecarMapper()));
+
+        String selectAllNodeRestart = "SELECT * FROM node_restart";
+        faults.addAll(jdbcTemplate.query(selectAllNodeRestart, new NodeRestartMapper()));
 
         return faults;
     }
@@ -48,10 +54,10 @@ public class FaultDAOImpl implements FaultDAO {
         String insertFault = "INSERT INTO fault(username, name, duration, scheduled_for, fault_type) " +
                 "VALUES (?, ?, ?, ?, ?) RETURNING f_id";
         Integer faultId = jdbcTemplate.queryForObject(insertFault, Integer.class,
-                "admin", nc.getName(), nc.getDuration(), 12, nc.getFault_type());
+                nc.getUsername(), nc.getName(), nc.getDuration(), nc.getScheduled_for(), nc.getFault_type());
 
         String insertNodeCrash = "INSERT INTO node_crash (f_id, num_nodes) VALUES (?, ?)";
-        jdbcTemplate.update(insertNodeCrash, faultId, 1);
+        jdbcTemplate.update(insertNodeCrash, faultId, nc.getNum_nodes());
 
         return faultId;
     }
@@ -87,24 +93,50 @@ public class FaultDAOImpl implements FaultDAO {
     }
 
     @Override
-    public Fault selectFaultByName(String faultName) {
-        logger.info("Retrieved fault with name " + faultName);
+    public Fault selectFaultByName(String name) {
         String selectFault = "SELECT * FROM fault WHERE name = ?";
-        return jdbcTemplate.queryForObject(selectFault, new Object[]{faultName}, new FaultMapper());
+        BaseFault baseFault = jdbcTemplate.queryForObject(selectFault, new Object[]{name}, new FaultMapper());
+
+        if (baseFault == null) {
+            throw new IllegalArgumentException("Fault with name " + name + " not found");
+        }
+
+        String faultType = baseFault.getFault_type().toLowerCase();
+
+        switch (faultType) {
+            case "node-crash":
+                return selectNodeCrashById(baseFault.getF_id());
+
+            case "node-restart":
+                return selectNodeRestartById(baseFault.getF_id());
+
+            case "cpu-stress-sc":
+                return selectCpuStressSidecarById(baseFault.getF_id());
+
+            default:
+                throw new UnsupportedOperationException("Unknown fault type: " + faultType);
+        }
     }
 
-    @Override
-    public void insertFault(Fault fault) {
-        if(fault instanceof NodeCrash){
-            insertNodeCrash((NodeCrash) fault);
-        }
-        else if(fault instanceof NodeRestart){
-            insertNodeRestart((NodeRestart) fault);
-        }
-        else{
-            logger.info("Could not insert fault");
-        }
+    private NodeCrash selectNodeCrashById(int faultId) {
+        String sql = "SELECT fault.*, node_crash.num_nodes " +
+                "FROM fault JOIN node_crash ON fault.f_id = node_crash.f_id " +
+                "WHERE fault.f_id = ?";
+        return jdbcTemplate.queryForObject(sql, new Object[]{faultId}, new NodeCrashMapper());
+    }
 
+    private NodeRestart selectNodeRestartById(int faultId) {
+        String sql = "SELECT fault.*, node_restart.num_nodes, node_restart.frequency " +
+                "FROM fault JOIN node_restart ON fault.f_id = node_restart.f_id " +
+                "WHERE fault.f_id = ?";
+        return jdbcTemplate.queryForObject(sql, new Object[]{faultId}, new NodeRestartMapper());
+    }
+
+    private CpuStressSidecar selectCpuStressSidecarById(int faultId) {
+        String sql = "SELECT fault.*, cpu_usage.num_threads " +
+                "FROM fault JOIN cpu_usage ON fault.f_id = cpu_usage.f_id " +
+                "WHERE fault.f_id = ?";
+        return jdbcTemplate.queryForObject(sql, new Object[]{faultId}, new CpuStressSidecarMapper());
     }
 
     @Override
@@ -134,6 +166,19 @@ public class FaultDAOImpl implements FaultDAO {
         return jdbcTemplate.queryForObject(selectCpuStressSidecar, new Object[]{name}, new CpuStressSidecarMapper());
     }
 
+    class FaultMapper implements RowMapper<BaseFault>{
+        public BaseFault mapRow(ResultSet rs, int rowNum) throws SQLException{
+            BaseFault bf = new BaseFault(
+                    rs.getInt("f_id"),
+                    rs.getString("username"),
+                    rs.getString("name"),
+                    rs.getInt("duration"),
+                    rs.getInt("scheduled_for"),
+                    rs.getString("fault_type")
+            );
+            return bf;
+        }
+    }
 
     class NodeCrashMapper implements RowMapper<NodeCrash> {
         public NodeCrash mapRow(ResultSet rs, int rowNum) throws SQLException{

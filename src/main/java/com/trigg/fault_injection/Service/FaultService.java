@@ -21,13 +21,9 @@ public class FaultService {
         this.faultDAO = faultDAO;
     }
 
-    //TODO
-    //this should have all the common fault attr
-    //unique ones will be set after the object is returned to the Controller
     public Fault defineFault(String type){
         //TODO duplicate name handling
         Fault fault = faultFactory.createFault(type);
-        //set common attr
         return fault;
     }
 
@@ -35,11 +31,16 @@ public class FaultService {
         return fault.insert(faultDAO);
     }
 
-    //TODO each of these should have more parameters
-    //todo add as more faults are created
-    public void injectRequestedFault(String type, String name){
+    public String injectRequestedFault(String name, String username, String role){
+        //TODO idt this method works lawl
         Fault fault = faultDAO.selectFaultByName(name);
-        fault.inject(dockerService);
+        if(fault.getUsername().equalsIgnoreCase(username) || role.equalsIgnoreCase("ROLE_ADMIN")){
+            fault.inject(dockerService);
+            return "Fault injected successfully";
+        }
+        else{
+            return "Fault belongs to " + fault.getUsername();
+        }
     }
 
     public List<Fault> listAllFaults(){
