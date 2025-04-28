@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -46,7 +45,7 @@ public class DockerController {
     //TODO: fault dne returns error
     @GetMapping("/inject")
     public void injectFault(String type, String name){
-        faultService.selectRequestedFault(type, name);
+        faultService.injectRequestedFault(type, name);
     }
 
     //Lists all defined faults

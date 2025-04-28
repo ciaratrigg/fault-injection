@@ -121,7 +121,7 @@ public class FaultDAOImpl implements FaultDAO {
         logger.info("Retrieved node restart fault with name " + name);
         String selectNodeRestart = "SELECT fault.f_id, fault.username, fault.name, fault.duration, " +
                 "fault.scheduled_for, fault.fault_type, node_restart.num_nodes, node_restart.frequency " +
-                "FROM fault JOIN node_restart on fault.f_id = node_crash.f_id WHERE name = ?";
+                "FROM fault JOIN node_restart on fault.f_id = node_restart.f_id WHERE name = ?";
         return jdbcTemplate.queryForObject(selectNodeRestart, new Object[]{name}, new NodeRestartMapper());
     }
 
@@ -134,19 +134,6 @@ public class FaultDAOImpl implements FaultDAO {
         return jdbcTemplate.queryForObject(selectCpuStressSidecar, new Object[]{name}, new CpuStressSidecarMapper());
     }
 
-    class FaultMapper implements RowMapper<Fault> {
-        public Fault mapRow(ResultSet rs, int rowNum) throws SQLException{
-            Fault fault = new Fault(
-                    rs.getInt("f_id"),
-                    rs.getString("username"),
-                    rs.getString("name"),
-                    rs.getInt("duration"),
-                    rs.getInt("scheduled_for"),
-                    rs.getString("fault_type")
-            );
-            return fault;
-        }
-    }
 
     class NodeCrashMapper implements RowMapper<NodeCrash> {
         public NodeCrash mapRow(ResultSet rs, int rowNum) throws SQLException{
