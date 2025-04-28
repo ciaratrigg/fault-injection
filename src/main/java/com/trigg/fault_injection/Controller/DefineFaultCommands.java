@@ -1,6 +1,7 @@
 package com.trigg.fault_injection.Controller;
 
 import com.trigg.fault_injection.Model.Fault;
+import com.trigg.fault_injection.Model.FaultType;
 import com.trigg.fault_injection.Service.FaultService;
 import com.trigg.fault_injection.Utilities.ShellAuthContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,9 +9,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
-
-// add this line to application.properties to launch interactive shell by default
-// spring.shell.interactive.enabled=true
 
 @ShellComponent
 public class DefineFaultCommands {
@@ -24,69 +22,58 @@ public class DefineFaultCommands {
         this.shellAuthContext = shellAuthContext;
     }
 
-    /*
-    default value if not given :
-
-    @ShellComponent
-    public class MyCommands {
-
-	@ShellMethod(key = "hello-world")
-	public String helloWorld(
-		@ShellOption(defaultValue = "spring") String arg
-	) {
-		return "Hello world " + arg;
-	}
-}
-     */
-
-    @ShellMethod(key = "define node-restart")
-    public String defineNodeRestart(String name, int duration, int scheduled_for, int num_nodes, int frequency){
-        if(!shellAuthContext.isAuthenticated()){
+    private String defineFaultInternal(FaultType type, String name, int duration, int scheduledFor, int numNodesOrThreads, Integer frequency) {
+        if (!shellAuthContext.isAuthenticated()) {
             return "You must be logged in to run this command.";
         }
-        Fault fault = faultService.defineFault("node-restart");
-        fault.setCommonAttr(shellAuthContext.getUsername(), name, duration, scheduled_for, "node-restart");
-        fault.setUniqueAttr(num_nodes, frequency);
-        try{
+        try {
+            Fault fault = faultService.defineFault(type.getTypeName());
+            fault.setCommonAttr(shellAuthContext.getUsername(), name, duration, scheduledFor, type.getTypeName());
+
+            if (frequency != null) {
+                fault.setUniqueAttr(numNodesOrThreads, frequency);
+            } else {
+                fault.setUniqueAttr(numNodesOrThreads);
+            }
+
             int faultId = faultService.saveFault(fault);
-            return "Successfully created node-restart with id " + faultId;
-        }
-        catch(DataAccessException e){
-            return "Failed to insert fault";
+            return "Successfully created " + type + " fault with ID: " + faultId;
+        } catch (DataAccessException e) {
+            return "Failed to insert fault due to database error.";
+        } catch (Exception e) {
+            return "Failed to define fault: " + e.getMessage();
         }
     }
 
-    @ShellMethod(key = "define cpu-stress-sc")
-    public String defineCpuStress(String name, int duration, int scheduled_for, int num_nodes){
-        if(!shellAuthContext.isAuthenticated()){
-            return "You must be logged in to run this command.";
-        }
-        Fault fault = faultService.defineFault("cpu-stress-sc");
-        fault.setCommonAttr(shellAuthContext.getUsername(), name, duration, scheduled_for, "cpu-stress-sc");
-        fault.setUniqueAttr(num_nodes);
-        try{
-            int faultId = faultService.saveFault(fault);
-            return "Successfully created cpu-stress-sc with id " + faultId;
-        }
-        catch(DataAccessException e){
-            return "Failed to insert fault";
-        }
+    @ShellMethod(key = "define node-restart", value = "Define a node restart fault.")
+    public String defineNodeRestart(
+            @ShellOption(help = "Name of the fault") String name,
+            @ShellOption(help = "Duration of the fault in seconds") int duration,
+            @ShellOption(defaultValue = "0", help = "Scheduled start time in minutes") int scheduledFor,
+            @ShellOption(defaultValue = "1", help = "Number of nodes affected") int numNodes,
+            @ShellOption(help = "Frequency of restarts") int frequency) {
+
+        return defineFaultInternal(FaultType.NODE_RESTART, name, duration, scheduledFor, numNodes, frequency);
     }
 
-    @ShellMethod(key = "define node-crash")
-    public String defineNodeCrash(String name, int duration, int scheduled_for, int num_nodes){
-        if(!shellAuthContext.isAuthenticated()){
-            return "You must be logged in to run this command.";
-        }
-        Fault fault = faultService.defineFault("node-crash");
-        fault.setCommonAttr(shellAuthContext.getUsername(), name, duration, scheduled_for, "node-crash");
-        fault.setUniqueAttr(num_nodes);
-        try{
-            int faultId = faultService.saveFault(fault);
-            return "Successfully created node-crash with id " + faultId;
-        }
-        catch(DataAccessException e){
-            return "Failed to insert fault";
-        }
+    @ShellMethod(key = "define cpu-stress-sc", value = "Define a CPU stress sidecar fault.")
+    public String defineCpuStress(
+            @ShellOption(help = "Name of the fault") String name,
+            @ShellOption(help = "Duration of the fault in seconds") int duration,
+            @ShellOption(defaultValue = "0", help = "Scheduled start time in minutes") int scheduledFor,
+            @ShellOption(defaultValue ="1", help = "Number of CPU stress threads") int numThreads) {
+
+        return defineFaultInternal(FaultType.CPU_STRESS_SC, name, duration, scheduledFor, numThreads, null);
     }
+
+    @ShellMethod(key = "define node-crash", value = "Define a node crash fault.")
+    public String defineNodeCrash(
+            @ShellOption(help = "Name of the fault") String name,
+            @ShellOption(help = "Duration of the fault in seconds") int duration,
+            @ShellOption(defaultValue = "0", help = "Scheduled start time in minutes") int scheduledFor,
+            @ShellOption(defaultValue = "1", help = "Number of nodes affected") int numNodes) {
+
+        return defineFaultInternal(FaultType.NODE_CRASH, name, duration, scheduledFor, numNodes, null);
+    }
+
 }
