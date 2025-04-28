@@ -1,10 +1,7 @@
 package com.trigg.fault_injection.Service;
 
-import com.trigg.fault_injection.Model.CpuStressSidecar;
 import com.trigg.fault_injection.Model.Fault;
 import com.trigg.fault_injection.Database.FaultDAOImpl;
-import com.trigg.fault_injection.Model.NodeCrash;
-import com.trigg.fault_injection.Model.NodeRestart;
 import com.trigg.fault_injection.Utilities.FaultFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,31 +21,30 @@ public class FaultService {
         this.faultDAO = faultDAO;
     }
 
-    public int defineFault(String type, String name, int duration){
+    public Fault defineFault(String type){
         //TODO duplicate name handling
-        return faultFactory.defineFault(type, name, duration);
+        Fault fault = faultFactory.createFault(type);
+        return fault;
     }
 
-    //TODO each of these should have more parameters
-    //todo add as more faults are created
-    public void selectRequestedFault(String type, String name){
-        //dockerService.connectToTgtNetwork();
-        if(type.equalsIgnoreCase("node-crash")){
-            NodeCrash fault = faultDAO.selectNodeCrash(name);
-            dockerService.stopContainersAsync(fault.getNum_nodes());
+    public int saveFault(Fault fault){
+        return fault.insert(faultDAO);
+    }
+
+    public String injectRequestedFault(String name, String username, String role){
+        //TODO idt this method works lawl
+        Fault fault = faultDAO.selectFaultByName(name);
+        if(fault.getUsername().equalsIgnoreCase(username) || role.equalsIgnoreCase("ROLE_ADMIN")){
+            fault.inject(dockerService);
+            return "Fault injected successfully";
         }
-        else if(type.equalsIgnoreCase("node-restart")){
-            NodeRestart fault = faultDAO.selectNodeRestart(name);
-            dockerService.restartContainersAsync(fault.getNum_nodes());
+        else{
+            return "Fault belongs to " + fault.getUsername();
         }
-        else if(type.equalsIgnoreCase("cpu-stress-sc")){
-            CpuStressSidecar fault = faultDAO.selectCpuStressSidecar(name);
-            dockerService.cpuStressSidecar();
-        }
-        //dockerService.disconnectFromTgtNetwork();
     }
 
     public List<Fault> listAllFaults(){
         return faultDAO.selectAllFaults();
     }
+
 }

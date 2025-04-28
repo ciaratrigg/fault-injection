@@ -8,16 +8,16 @@ import java.util.List;
 @Scope("singleton")
 public class ShellAuthContext {
     private String currentUsername;
-    private List<String> roles;
+    private String role;
 
-    public void login(String username, List<String> roles) {
+    public void login(String username, String role) {
         this.currentUsername = username;
-        this.roles = roles;
+        this.role = role;
     }
 
     public void logout() {
         this.currentUsername = null;
-        this.roles = null;
+        this.role = null;
     }
 
     public boolean isAuthenticated() {
@@ -25,8 +25,10 @@ public class ShellAuthContext {
     }
 
     public boolean hasRole(String role) {
-        return roles != null && roles.contains(role);
+        return this.role.equalsIgnoreCase(role);
     }
+
+    public String getRole(){ return this.role;}
 
     public String getUsername() {
         return currentUsername;

@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 
 @Service
 public class DockerService {
+    //TODO add currently running jobs thing
     //TODO: identify dependencies btwn classes and maybe refactor
     private final DockerClient dockerClient;
     private final ExecutorService executorService;

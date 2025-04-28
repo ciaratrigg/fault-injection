@@ -8,15 +8,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/docker")
 public class DockerController {
-
-    //TODO i think i prefer the idea of having a different method for each inject/"faultType"
-    // rather than using if statements all throughout
 
     private final DockerService dockerService;
     private FaultService faultService;
@@ -25,7 +21,7 @@ public class DockerController {
         this.dockerService = dockerService;
         this.faultService = faultService;
     }
-
+/*
     // Defines a fault that can be injected later
     @GetMapping("/define")
     public String defineFault(String type, String name, int duration){
@@ -46,7 +42,7 @@ public class DockerController {
     //TODO: fault dne returns error
     @GetMapping("/inject")
     public void injectFault(String type, String name){
-        faultService.selectRequestedFault(type, name);
+        faultService.injectRequestedFault(type, name);
     }
 
     //Lists all defined faults
@@ -62,5 +58,5 @@ public class DockerController {
 
 
     //Schedules a fault for later execution
-
+*/
 }
