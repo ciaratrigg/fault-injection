@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 @Service
 public class DockerService {
     //TODO add currently running jobs thing
-    //TODO: identify dependencies btwn classes and maybe refactor
     private final DockerClient dockerClient;
     private final ExecutorService executorService;
     private static final Logger LOGGER = Logger.getLogger(DockerService.class.getName());
@@ -123,7 +122,6 @@ public class DockerService {
         });
     }
 
-    //TODO sidecar container CPU overload
     public void cpuStressSidecar(){
         CreateContainerResponse container = dockerClient.createContainerCmd("busybox")
                 .withCmd("sh", "-c", "while true; do :; done")
@@ -133,7 +131,6 @@ public class DockerService {
         LOGGER.info("CPU burner started in " + targetNetwork + container.getId());
     }
 
-    //TODO dynamically connect to target system network
     public void connectToTgtNetwork(){
         try{
             dockerClient.connectToNetworkCmd()
