@@ -21,6 +21,11 @@ public class DockerController {
         this.dockerService = dockerService;
         this.faultService = faultService;
     }
+
+    @GetMapping("/list-containers")
+    public List<String> listContainers(){
+        return dockerService.listContainerIds();
+    }
 /*
     // Defines a fault that can be injected later
     @GetMapping("/define")
@@ -51,10 +56,6 @@ public class DockerController {
         return faultService.listAllFaults();
     }
 
-    @GetMapping("/list-containers")
-    public List<String> listContainers(){
-        return dockerService.listContainerIds();
-    }
 
 
     //Schedules a fault for later execution

@@ -30,6 +30,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/**").hasRole("USER")
+                        .requestMatchers("/api/docker/list-containers").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .httpBasic();

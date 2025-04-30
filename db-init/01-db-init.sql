@@ -41,20 +41,6 @@ CREATE TABLE IF NOT EXISTS node_restart (
   PRIMARY KEY (f_id)
 );
 
-CREATE TABLE IF NOT EXISTS corrupted_data (
-  f_id INT REFERENCES fault(f_id) ON DELETE CASCADE,
-  block_size INT,
-  num_blocks INT,
-  PRIMARY KEY (f_id)
-);
-
-CREATE TABLE IF NOT EXISTS memory_exhaustion (
-  f_id INT REFERENCES fault(f_id) ON DELETE CASCADE,
-  num_processes INT,
-  memory INT,
-  PRIMARY KEY (f_id)
-);
-
 CREATE TABLE IF NOT EXISTS bandwidth_throttle (
   f_id INT REFERENCES fault(f_id) ON DELETE CASCADE,
   rate INT,
@@ -67,12 +53,6 @@ CREATE TABLE IF NOT EXISTS network_latency (
   f_id INT REFERENCES fault(f_id) ON DELETE CASCADE,
   delay INT,
   delta INT,
-  PRIMARY KEY (f_id)
-);
-
-CREATE TABLE IF NOT EXISTS volume_deletion (
-  f_id INT REFERENCES fault(f_id) ON DELETE CASCADE,
-  num_volumes INT,
   PRIMARY KEY (f_id)
 );
 
