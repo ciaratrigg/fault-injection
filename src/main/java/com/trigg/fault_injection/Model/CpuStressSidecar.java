@@ -27,7 +27,7 @@ public class CpuStressSidecar implements Fault{
 
     @Override
     public void inject(DockerService dockerService) {
-        dockerService.cpuStressSidecar();
+        dockerService.cpuStressSidecar(this.duration);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class CpuStressSidecar implements Fault{
 
     @Override
     public void setUniqueAttr(int num_nodes) {
-
+        this.num_threads = num_nodes;
     }
 
     @Override
