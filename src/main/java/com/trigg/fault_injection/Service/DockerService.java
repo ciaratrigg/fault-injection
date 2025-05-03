@@ -23,14 +23,14 @@ public class DockerService {
     @Value("${docker.network}")
     private String targetNetwork;
 
-    @Value("${docker.tgtlabels}")
-    private String targetLabels;
+    @Value("${docker.tgtlabel}")
+    private String targetLabel;
 
     public List<Container> targetSystemContainers() {
-        System.out.println("Filtering containers with label: " + targetLabels);
+        System.out.println("Filtering containers with label: " + targetLabel);
 
         return dockerClient.listContainersCmd()
-                .withLabelFilter(Collections.singletonList(targetLabels)) // Filtering by label
+                .withLabelFilter(Collections.singletonList(targetLabel))
                 .exec();
     }
 
@@ -58,7 +58,7 @@ public class DockerService {
         return containerIds;
     }
 
-    public void stopContainersAsync(int numNodes) {
+    public void stopContainers(int numNodes) {
         System.out.println("Creating a new thread...");
         executorService.submit(() -> {
             try {

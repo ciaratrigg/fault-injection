@@ -27,7 +27,7 @@ public class NodeCrash implements Fault {
 
     @Override
     public void inject(DockerService dockerService) {
-        dockerService.stopContainersAsync(this.num_nodes);
+        dockerService.stopContainers(this.num_nodes);
     }
 
     @Override
