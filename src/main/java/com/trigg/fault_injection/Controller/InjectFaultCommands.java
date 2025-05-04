@@ -44,4 +44,11 @@ public class InjectFaultCommands {
                 .collect(Collectors.joining("\n\n"));
     }
 
+    @ShellMethod(key = "list-faults", value = "List all defined faults in the database")
+    public String listAllDefinedFaults() {
+        return faultService.listAllFaults().stream()
+                .map(Object::toString)
+                .collect(Collectors.joining("\n\n"));
+    }
+
 }

@@ -31,18 +31,28 @@ public class FaultDAOImpl implements FaultDAO {
 
     @Override
     public List<Fault> selectAllFaults() {
+        String baseQuery = "SELECT * FROM fault";
+        List<BaseFault> baseFaults = jdbcTemplate.query(baseQuery, new FaultMapper());
         List<Fault> faults = new ArrayList<>();
-        logger.info("Retrieved all faults");
-        //TODO these all need to be joins
 
-        String selectAllNodeCrash = "SELECT * FROM node-crash";
-        faults.addAll(jdbcTemplate.query(selectAllNodeCrash, new NodeCrashMapper()));
+        for (BaseFault bf : baseFaults) {
+            String faultType = bf.getFault_type().toLowerCase();
 
-        String selectAllCpuStress = "SELECT * FROM cpu_usage";
-        faults.addAll(jdbcTemplate.query(selectAllCpuStress, new CpuStressSidecarMapper()));
-
-        String selectAllNodeRestart = "SELECT * FROM node_restart";
-        faults.addAll(jdbcTemplate.query(selectAllNodeRestart, new NodeRestartMapper()));
+            switch (faultType) {
+                case "node-crash":
+                    faults.add(selectNodeCrashById(bf.getF_id()));
+                    break;
+                case "node-restart":
+                    faults.add(selectNodeRestartById(bf.getF_id()));
+                    break;
+                case "cpu-stress-sc":
+                    faults.add(selectCpuStressSidecarById(bf.getF_id()));
+                    break;
+                default:
+                    logger.warn("Unknown fault type: " + faultType + " for fault id: " + bf.getF_id());
+                    break;
+            }
+        }
 
         return faults;
     }
@@ -71,7 +81,7 @@ public class FaultDAOImpl implements FaultDAO {
         Integer faultId = jdbcTemplate.queryForObject(insertFault, Integer.class,
                 nr.getUsername(), nr.getName(), nr.getDuration(), nr.getScheduled_for(), nr.getFault_type());
 
-        String insertNodeRestart = "INSERT INTO node_crash (f_id, num_nodes, frequency) VALUES (?, ?, ?)";
+        String insertNodeRestart = "INSERT INTO node_restart (f_id, num_nodes, frequency) VALUES (?, ?, ?)";
         jdbcTemplate.update(insertNodeRestart, faultId, nr.getNum_nodes(), nr.getFrequency());
 
         return faultId;
