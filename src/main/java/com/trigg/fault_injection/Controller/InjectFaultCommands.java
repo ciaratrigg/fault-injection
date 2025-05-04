@@ -9,6 +9,8 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 
+import java.util.stream.Collectors;
+
 @ShellComponent
 public class InjectFaultCommands {
     private FaultService faultService;
@@ -35,6 +37,11 @@ public class InjectFaultCommands {
         }
     }
 
-
+    @ShellMethod(key = "list-jobs")
+    public String listRunningJobs() {
+        return faultService.listAllJobs().stream()
+                .map(Object::toString)
+                .collect(Collectors.joining("\n\n"));
+    }
 
 }
