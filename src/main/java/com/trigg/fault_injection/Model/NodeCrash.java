@@ -27,8 +27,9 @@ public class NodeCrash implements Fault {
 
     @Override
     public void inject(DockerService dockerService) {
-        dockerService.stopContainers(this.num_nodes);
+        dockerService.scheduleFault(this.name, this.fault_type, this.scheduled_for, this.duration, -1, this.num_nodes);
     }
+
 
     @Override
     public int insert(FaultDAO faultDAO) {

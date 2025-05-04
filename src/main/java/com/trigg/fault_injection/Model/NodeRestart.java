@@ -29,8 +29,7 @@ public class NodeRestart implements Fault {
 
     @Override
     public void inject(DockerService dockerService) {
-        dockerService.restartContainersAsync(this.num_nodes);
-        //TODO add frequency
+        dockerService.scheduleFault(this.name, this.fault_type, this.scheduled_for, this.duration, this.frequency, this.num_nodes);
     }
 
     @Override
