@@ -46,18 +46,6 @@ public class DockerService {
         this.scheduledJobs = Collections.synchronizedList(new ArrayList<>());
     }
 
-    public List<Container> targetSystemContainers() {
-        return dockerClient.listContainersCmd()
-                .withLabelFilter(Collections.singletonList(targetLabels))
-                .exec();
-    }
-
-    public List<Container> listContainers() {
-        return dockerClient.listContainersCmd()
-                .withShowAll(true)
-                .exec();
-    }
-
     public List<String> listContainerIds() {
         List<Container> containers = targetSystemContainers();
         List<String> ids = new ArrayList<>();

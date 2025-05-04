@@ -31,14 +31,15 @@ public class FaultService {
         return fault.insert(faultDAO);
     }
 
-    public String injectRequestedFault(String name, String username, String role){
+    public String injectRequestedFault(String name, String username, String role, int scheduledFor){
         Fault fault = faultDAO.selectFaultByName(name);
         if(fault.getUsername().equalsIgnoreCase(username) || role.equalsIgnoreCase("ROLE_ADMIN")){
+            fault.setScheduled_for(scheduledFor);
             fault.inject(dockerService);
-            return "Fault injected successfully";
+            return "Fault scheduled for injection";
         }
         else{
-            return "Fault belongs to " + fault.getUsername();
+            return "Error: Fault belongs to " + fault.getUsername() + ". Permission denied";
         }
     }
 

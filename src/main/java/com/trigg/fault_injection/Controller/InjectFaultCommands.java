@@ -21,12 +21,13 @@ public class InjectFaultCommands {
     }
 
     @ShellMethod(key = "inject")
-    public String injectFault(@ShellOption String name) {
+    public String injectFault(@ShellOption (help = "Name of a predefined fault") String name,
+                              @ShellOption(defaultValue = "0", help = "Scheduled start time in seconds after submission") int scheduledFor) {
         if (!shellAuthContext.isAuthenticated()) {
             return "You must be logged in to run this command.";
         }
         try{
-            String result = faultService.injectRequestedFault(name, shellAuthContext.getUsername(), shellAuthContext.getRole());
+            String result = faultService.injectRequestedFault(name, shellAuthContext.getUsername(), shellAuthContext.getRole(), scheduledFor);
             return result;
         }
         catch (DataAccessException e){

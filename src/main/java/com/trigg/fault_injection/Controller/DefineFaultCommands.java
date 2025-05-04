@@ -22,13 +22,13 @@ public class DefineFaultCommands {
         this.shellAuthContext = shellAuthContext;
     }
 
-    private String defineFaultInternal(FaultType type, String name, int duration, int scheduledFor, int numNodesOrThreads, Integer frequency) {
+    private String defineFaultInternal(FaultType type, String name, int duration, int numNodesOrThreads, Integer frequency) {
         if (!shellAuthContext.isAuthenticated()) {
             return "You must be logged in to run this command.";
         }
         try {
             Fault fault = faultService.defineFault(type.getTypeName());
-            fault.setCommonAttr(shellAuthContext.getUsername(), name, duration, scheduledFor, type.getTypeName());
+            fault.setCommonAttr(shellAuthContext.getUsername(), name, duration, type.getTypeName());
 
             if (frequency != null) {
                 fault.setUniqueAttr(numNodesOrThreads, frequency);
@@ -49,31 +49,28 @@ public class DefineFaultCommands {
     public String defineNodeRestart(
             @ShellOption(help = "Name of the fault") String name,
             @ShellOption(help = "Duration of the fault in seconds") int duration,
-            @ShellOption(defaultValue = "0", help = "Scheduled start time in minutes") int scheduledFor,
             @ShellOption(defaultValue = "1", help = "Number of nodes affected") int numNodes,
             @ShellOption(help = "Frequency of restarts") int frequency) {
 
-        return defineFaultInternal(FaultType.NODE_RESTART, name, duration, scheduledFor, numNodes, frequency);
+        return defineFaultInternal(FaultType.NODE_RESTART, name, duration, numNodes, frequency);
     }
 
     @ShellMethod(key = "define cpu-stress-sc", value = "Define a CPU stress sidecar fault.")
     public String defineCpuStress(
             @ShellOption(help = "Name of the fault") String name,
             @ShellOption(help = "Duration of the fault in seconds") int duration,
-            @ShellOption(defaultValue = "0", help = "Scheduled start time in minutes") int scheduledFor,
             @ShellOption(defaultValue ="1", help = "Number of CPU stress threads") int numThreads) {
 
-        return defineFaultInternal(FaultType.CPU_STRESS_SC, name, duration, scheduledFor, numThreads, null);
+        return defineFaultInternal(FaultType.CPU_STRESS_SC, name, duration, numThreads, null);
     }
 
     @ShellMethod(key = "define node-crash", value = "Define a node crash fault.")
     public String defineNodeCrash(
             @ShellOption(help = "Name of the fault") String name,
             @ShellOption(help = "Duration of the fault in seconds") int duration,
-            @ShellOption(defaultValue = "0", help = "Scheduled start time in minutes") int scheduledFor,
             @ShellOption(defaultValue = "1", help = "Number of nodes affected") int numNodes) {
 
-        return defineFaultInternal(FaultType.NODE_CRASH, name, duration, scheduledFor, numNodes, null);
+        return defineFaultInternal(FaultType.NODE_CRASH, name, duration, numNodes, null);
     }
 
 }

@@ -25,6 +25,11 @@ public class PacketLoss implements Fault{
     }
 
     @Override
+    public void setScheduled_for(int scheduled_for) {
+
+    }
+
+    @Override
     public String getFault_type() {
         return "";
     }
@@ -55,7 +60,7 @@ public class PacketLoss implements Fault{
     }
 
     @Override
-    public void setCommonAttr(String username, String name, int duration, int scheduled_for, String fault_type) {
+    public void setCommonAttr(String username, String name, int duration, String fault_type) {
 
     }
 }

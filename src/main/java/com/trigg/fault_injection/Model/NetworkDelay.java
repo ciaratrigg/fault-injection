@@ -37,11 +37,10 @@ public class NetworkDelay implements Fault {
     }
 
     @Override
-    public void setCommonAttr(String username, String name, int duration, int scheduled_for, String fault_type) {
+    public void setCommonAttr(String username, String name, int duration, String fault_type) {
         this.username = username;
         this.name = name;
         this.duration = duration;
-        this.scheduled_for = scheduled_for;
         this.fault_type = fault_type;
     }
 
