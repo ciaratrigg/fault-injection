@@ -30,6 +30,7 @@ public class NodeCrash implements Fault {
         dockerService.scheduleFault(this.name, this.fault_type, this.scheduled_for, this.duration, -1, this.num_nodes);
     }
 
+
     @Override
     public int insert(FaultDAO faultDAO) {
         return faultDAO.insertNodeCrash(this);
