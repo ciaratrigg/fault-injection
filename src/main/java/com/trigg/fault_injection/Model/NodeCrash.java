@@ -3,6 +3,8 @@ package com.trigg.fault_injection.Model;
 import com.trigg.fault_injection.Database.FaultDAO;
 import com.trigg.fault_injection.Service.DockerService;
 
+import java.util.Map;
+
 public class NodeCrash implements Fault {
     int f_id;
     String username;
@@ -107,5 +109,18 @@ public class NodeCrash implements Fault {
 
     public void setNum_nodes(int num_nodes) {
         this.num_nodes = num_nodes;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Fault ID       : ").append(f_id).append("\n");
+        sb.append("Username       : ").append(username).append("\n");
+        sb.append("Name           : ").append(name).append("\n");
+        sb.append("Duration       : ").append(duration).append("s\n");
+        sb.append("Fault Type     : ").append(fault_type).append("\n");
+        sb.append("Number of nodes: ").append(num_nodes).append("\n");
+
+        return sb.toString();
     }
 }

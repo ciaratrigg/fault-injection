@@ -110,4 +110,17 @@ public class CpuStressSidecar implements Fault{
     public void setNum_threads(int num_threads) {
         this.num_threads = num_threads;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Fault ID          : ").append(f_id).append("\n");
+        sb.append("Username          : ").append(username).append("\n");
+        sb.append("Name              : ").append(name).append("\n");
+        sb.append("Duration          : ").append(duration).append("s\n");
+        sb.append("Fault Type        : ").append(fault_type).append("\n");
+        sb.append("Number of sidecars: ").append(num_threads).append("\n");
+
+        return sb.toString();
+    }
 }

@@ -47,4 +47,6 @@ public class FaultService {
         return faultDAO.selectAllFaults();
     }
 
+    public List<DockerService.ScheduledJob> listAllJobs(){ return dockerService.getScheduledJobs();}
+
 }

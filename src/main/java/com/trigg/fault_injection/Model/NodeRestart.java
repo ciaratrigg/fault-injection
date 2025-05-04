@@ -119,4 +119,18 @@ public class NodeRestart implements Fault {
     public void setFrequency(int frequency) {
         this.frequency = frequency;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Fault ID       : ").append(f_id).append("\n");
+        sb.append("Username       : ").append(username).append("\n");
+        sb.append("Name           : ").append(name).append("\n");
+        sb.append("Duration       : ").append(duration).append("s\n");
+        sb.append("Fault Type     : ").append(fault_type).append("\n");
+        sb.append("Number of nodes: ").append(num_nodes).append("\n");
+        sb.append("Frequency      : ").append(frequency).append("\n");
+
+        return sb.toString();
+    }
 }

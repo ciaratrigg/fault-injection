@@ -178,7 +178,7 @@ public class DockerService {
             }
         };
 
-        Future<?> future = scheduler.schedule(task, delaySeconds, TimeUnit.SECONDS);  // ✅ FIXED
+        Future<?> future = scheduler.schedule(task, delaySeconds, TimeUnit.SECONDS);
         scheduledJobs.add(new ScheduledJob(faultName, startTime, duration, future));
     }
 
@@ -248,5 +248,22 @@ public class DockerService {
         public boolean isCancelled() {
             return future.isCancelled();
         }
+
+        @Override
+        public String toString() {
+            return String.format(
+                    "Fault Name     : %s%n" +
+                            "Scheduled Time : %s%n" +
+                            "Duration       : %s%n" +
+                            "Done           : %s%n" +
+                            "Cancelled      : %s",
+                    faultName,
+                    scheduledTime,
+                    duration,
+                    isDone(),
+                    isCancelled()
+            );
+        }
+
     }
 }
