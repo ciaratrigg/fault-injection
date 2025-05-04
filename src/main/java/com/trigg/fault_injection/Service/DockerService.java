@@ -59,109 +59,132 @@ public class DockerService {
         return ids;
     }
 
-    public void stopContainersAsync(int numNodes, int duration) {
-        executorService.submit(() -> {
-            try {
-                List<String> allRunningContainerIds = listContainerIds(); // Use your method
-
-                int maxStoppable = Math.min(numNodes, allRunningContainerIds.size() - 1);
-                if (maxStoppable <= 0) {
-                    System.out.println("Not enough containers to stop safely.");
-                    return;
-                }
-
-                List<String> containerIdsToStop = allRunningContainerIds.subList(0, maxStoppable);
-
-                for (String id : containerIdsToStop) {
-                    dockerClient.stopContainerCmd(id).exec();
-                    System.out.println("Stopped container: " + id);
-                }
-
-                scheduler.schedule(() -> {
-                    for (String id : containerIdsToStop) {
-                        try {
-                            dockerClient.startContainerCmd(id).exec();
-                            System.out.println("Restarted container: " + id);
-                        } catch (Exception e) {
-                            System.err.println("Failed to restart container: " + id);
-                            e.printStackTrace();
-                        }
-                    }
-                }, duration, TimeUnit.SECONDS);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
-
-    public void restartContainers(Duration duration) {
+    public void stopContainers(int num_nodes, Duration duration) {
         executorService.submit(() -> {
             try {
                 List<String> ids = listContainerIds();
                 if (ids.size() <= 1) return;
 
+                int maxStoppable = Math.min(num_nodes, ids.size() - 1);
                 Collections.shuffle(ids);
-                List<String> toRestart = ids.subList(0, ids.size() - 1);
-                for (String id : toRestart) {
-                    dockerClient.restartContainerCmd(id).exec();
-                    LOGGER.info("Restarted container: " + id);
+                List<String> toStop = ids.subList(0, maxStoppable);
+
+                for (String id : toStop) {
+                    dockerClient.stopContainerCmd(id).exec();
+                    LOGGER.info("Stopped container: " + id);
                 }
 
-                // No real reversal needed, just wait out the duration
                 Thread.sleep(duration.toMillis());
+
+                for (String id : toStop) {
+                    try {
+                        dockerClient.startContainerCmd(id).exec();
+                        LOGGER.info("Restarted container: " + id);
+                    } catch (Exception e) {
+                        LOGGER.warning("Failed to restart container: " + id);
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.severe("Error in stopContainers: " + e.getMessage());
+            }
+        });
+    }
+
+
+
+    public void restartContainers(int num_nodes, int frequency, Duration duration) {
+        executorService.submit(() -> {
+            try {
+                List<String> ids = listContainerIds();
+                if (ids.size() <= 1 || frequency <= 0) return;
+
+                int maxRestartable = Math.min(num_nodes, ids.size() - 1);
+                Collections.shuffle(ids);
+                List<String> toRestart = ids.subList(0, maxRestartable);
+
+                long delayBetweenRestartsMillis = duration.toMillis() / frequency;
+                long endTime = System.currentTimeMillis() + duration.toMillis();
+
+                while (System.currentTimeMillis() < endTime) {
+                    for (String id : toRestart) {
+                        try {
+                            dockerClient.restartContainerCmd(id).exec();
+                            LOGGER.info("Restarted container: " + id);
+                        } catch (Exception e) {
+                            LOGGER.warning("Failed to restart container: " + id);
+                        }
+                    }
+                    Thread.sleep(delayBetweenRestartsMillis);
+                }
+
             } catch (Exception e) {
                 LOGGER.severe("Error in restartContainers: " + e.getMessage());
             }
         });
     }
 
-    public void cpuStressSidecar(Duration duration) {
+    public void cpuStressSidecar(int num_nodes, Duration duration) {
         executorService.submit(() -> {
-            CreateContainerResponse container = dockerClient.createContainerCmd("busybox")
-                    .withCmd("sh", "-c", "while true; do :; done")
-                    .withNetworkMode(targetNetwork)
-                    .exec();
-
-            String containerId = container.getId();
-            dockerClient.startContainerCmd(containerId).exec();
-            LOGGER.info("Started CPU stress sidecar: " + containerId);
+            List<String> sidecarIds = new ArrayList<>();
 
             try {
-                Thread.sleep(duration.toMillis());
-            } catch (InterruptedException ignored) {}
+                for (int i = 0; i < num_nodes; i++) {
+                    CreateContainerResponse container = dockerClient.createContainerCmd("busybox")
+                            .withCmd("sh", "-c", "while true; do :; done")
+                            .withNetworkMode(targetNetwork)
+                            .exec();
 
-            dockerClient.stopContainerCmd(containerId).exec();
-            dockerClient.removeContainerCmd(containerId).exec();
-            LOGGER.info("Stopped and removed CPU stress sidecar: " + containerId);
+                    String containerId = container.getId();
+                    dockerClient.startContainerCmd(containerId).exec();
+                    sidecarIds.add(containerId);
+                    LOGGER.info("Started CPU stress sidecar: " + containerId);
+                }
+
+                Thread.sleep(duration.toMillis());
+
+            } catch (Exception e) {
+                LOGGER.severe("Error starting CPU stress sidecars: " + e.getMessage());
+            } finally {
+                for (String containerId : sidecarIds) {
+                    try {
+                        dockerClient.stopContainerCmd(containerId).exec();
+                        dockerClient.removeContainerCmd(containerId).exec();
+                        LOGGER.info("Stopped and removed CPU stress sidecar: " + containerId);
+                    } catch (Exception e) {
+                        LOGGER.warning("Failed to stop/remove CPU stress sidecar: " + containerId);
+                    }
+                }
+            }
         });
     }
 
-    public void scheduleFault(String faultName, int delaySeconds, int durationSeconds) {
+
+    public void scheduleFault(String faultName, String fault_type, int delaySeconds, int durationSeconds, int frequency, int num_nodes) {
         Instant startTime = Instant.now().plusSeconds(delaySeconds);
         Duration duration = Duration.ofSeconds(durationSeconds);
 
         Runnable task = () -> {
             LOGGER.info("Executing fault: " + faultName);
 
-            switch (faultName.toLowerCase()) {
-                case "stop":
-                    stopContainers(duration);
+            switch (fault_type.toLowerCase()) {
+                case "node-crash":
+                    stopContainers(num_nodes, duration);
                     break;
-                case "restart":
-                    restartContainers(duration);
+                case "node-restart":
+                    restartContainers(num_nodes, frequency, duration);
                     break;
-                case "cpu":
-                    cpuStressSidecar(duration);
+                case "cpu-stress-sc":
+                    cpuStressSidecar(num_nodes, duration);
                     break;
                 default:
                     LOGGER.warning("Unknown fault: " + faultName);
             }
         };
 
-        Future<?> future = scheduler.schedule(task, delaySeconds, TimeUnit.SECONDS);
+        Future<?> future = scheduler.schedule(task, delaySeconds, TimeUnit.SECONDS);  // ✅ FIXED
         scheduledJobs.add(new ScheduledJob(faultName, startTime, duration, future));
     }
+
 
     public List<ScheduledJob> getScheduledJobs() {
         return new ArrayList<>(scheduledJobs);
@@ -196,7 +219,6 @@ public class DockerService {
         scheduler.shutdown();
     }
 
-    // Inner class to represent scheduled jobs
     public static class ScheduledJob {
         private final String faultName;
         private final Instant scheduledTime;
