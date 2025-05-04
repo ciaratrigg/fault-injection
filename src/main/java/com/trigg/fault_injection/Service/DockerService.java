@@ -25,9 +25,17 @@ public class DockerService {
     @Value("${docker.network}")
     private String targetNetwork;
 
-    @Value("${docker.tgtlabels}")
-    private String targetLabels;
+    @Value("${docker.tgtlabel}")
+    private String targetLabel;
 
+    public List<Container> targetSystemContainers() {
+        System.out.println("Filtering containers with label: " + targetLabel);
+
+        return dockerClient.listContainersCmd()
+                .withLabelFilter(Collections.singletonList(targetLabel))
+                .exec();
+    }
+  
     @Value("${spring.application.name}")
     private String appName;
 
@@ -60,6 +68,7 @@ public class DockerService {
     }
 
     public void stopContainers(int num_nodes, Duration duration) {
+
         executorService.submit(() -> {
             try {
                 List<String> ids = listContainerIds();
