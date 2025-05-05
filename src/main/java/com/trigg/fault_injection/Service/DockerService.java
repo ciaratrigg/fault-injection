@@ -3,22 +3,27 @@ package com.trigg.fault_injection.Service;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.model.Container;
+import eu.rekawek.toxiproxy.ToxiproxyClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.Logger;
+import eu.rekawek.toxiproxy.Proxy;
+import eu.rekawek.toxiproxy.model.Toxic;
 
 @Service
 public class DockerService {
 
-    private final DockerClient dockerClient;
-    private final ExecutorService executorService;
-    private final ScheduledExecutorService scheduler;
-    private final List<ScheduledJob> scheduledJobs;
+    private DockerClient dockerClient;
+    private ExecutorService executorService;
+    private ScheduledExecutorService scheduler;
+    private List<ScheduledJob> scheduledJobs;
+    private ToxiproxyService toxiproxyService;
 
     private static final Logger LOGGER = Logger.getLogger(DockerService.class.getName());
 
@@ -39,11 +44,12 @@ public class DockerService {
     @Value("${spring.application.name}")
     private String appName;
 
-    public DockerService(DockerClient dockerClient) {
+    public DockerService(DockerClient dockerClient) throws IOException {
         this.dockerClient = dockerClient;
         this.executorService = Executors.newFixedThreadPool(5);
         this.scheduler = Executors.newScheduledThreadPool(5);
         this.scheduledJobs = Collections.synchronizedList(new ArrayList<>());
+        this.toxiproxyService = new ToxiproxyService();
     }
 
     public List<String> listContainerIds() {
@@ -155,8 +161,7 @@ public class DockerService {
         });
     }
 
-
-    public void scheduleFault(String faultName, String fault_type, int delaySeconds, int durationSeconds, int frequency, int num_nodes) {
+    public void scheduleFault(String faultName, String fault_type, int delaySeconds, int durationSeconds, int frequency, int num_nodes, String proxyName, long latencyRateOrPercent ) {
         Instant startTime = Instant.now().plusSeconds(delaySeconds);
         Duration duration = Duration.ofSeconds(durationSeconds);
 
@@ -173,6 +178,14 @@ public class DockerService {
                 case "cpu-stress-sc":
                     cpuStressSidecar(num_nodes, duration);
                     break;
+                case "network-latency":
+                    networkLatency(proxyName, latencyRateOrPercent, duration);
+                    break;
+                case "bandwidth-throttle":
+                    bandwidthThrottle(proxyName, latencyRateOrPercent , duration);
+                    break;
+                case "packet-loss":
+                    packetLoss(proxyName, latencyRateOrPercent, duration);
                 default:
                     LOGGER.warning("Unknown fault: " + faultName);
             }
@@ -214,6 +227,46 @@ public class DockerService {
     public void shutdown() {
         executorService.shutdown();
         scheduler.shutdown();
+    }
+
+    public void networkLatency(String proxyName, long latency, Duration duration) {
+        executorService.submit(() -> {
+            try {
+                toxiproxyService.addLatency(proxyName, latency);
+                Thread.sleep(duration.toMillis());
+                toxiproxyService.removeToxic(proxyName, "latency");
+            } catch (Exception e) {
+                LOGGER.severe("Error simulating network latency: " + e.getMessage());
+            }
+        });
+    }
+
+    public void bandwidthThrottle(String proxyName, long rate, Duration duration) {
+        executorService.submit(() -> {
+            try {
+                toxiproxyService.addBandwidth(proxyName, rate);
+                Thread.sleep(duration.toMillis());
+                toxiproxyService.removeToxic(proxyName, "bandwidth");
+            } catch (Exception e) {
+                LOGGER.severe("Error simulating bandwidth throttling: " + e.getMessage());
+            }
+        });
+    }
+
+    public void packetLoss(String proxyName, long lossPercentage, Duration duration) {
+        executorService.submit(() -> {
+            try {
+                toxiproxyService.addPacketLoss(proxyName, lossPercentage);
+                Thread.sleep(duration.toMillis());
+                toxiproxyService.removeToxic(proxyName, "packet_loss");
+            } catch (Exception e) {
+                LOGGER.severe("Error simulating packet loss: " + e.getMessage());
+            }
+        });
+    }
+
+    public void createProxy(String proxyName, String listen, String upstream) throws IOException {
+        toxiproxyService.createProxy(proxyName, listen, upstream);
     }
 
     public static class ScheduledJob {

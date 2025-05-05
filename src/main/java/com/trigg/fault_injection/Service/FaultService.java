@@ -6,6 +6,7 @@ import com.trigg.fault_injection.Utilities.FaultFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -49,4 +50,7 @@ public class FaultService {
 
     public List<DockerService.ScheduledJob> listAllJobs(){ return dockerService.getScheduledJobs();}
 
+    public void createProxy(String proxyName, String listen, String upstream) throws IOException {
+        dockerService.createProxy(proxyName, listen, upstream);
+    }
 }

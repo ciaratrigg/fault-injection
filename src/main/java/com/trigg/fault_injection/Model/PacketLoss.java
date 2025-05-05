@@ -60,6 +60,11 @@ public class PacketLoss implements Fault{
     }
 
     @Override
+    public void setUniqueAttr(long latency) {
+
+    }
+
+    @Override
     public void setCommonAttr(String username, String name, int duration, String fault_type) {
 
     }

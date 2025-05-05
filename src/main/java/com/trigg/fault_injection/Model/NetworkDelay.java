@@ -10,15 +10,15 @@ public class NetworkDelay implements Fault {
     private int duration;
     private int scheduled_for;
     private String fault_type;
-    private int delay;
-    private int delta;
+    private long latency;
+
 
     public NetworkDelay() {
     }
 
     @Override
     public void inject(DockerService dockerService) {
-
+        dockerService.scheduleFault(this.name, this.fault_type, this.scheduled_for, this.duration, -1, -1, name, latency);
     }
 
     @Override
@@ -34,6 +34,11 @@ public class NetworkDelay implements Fault {
     @Override
     public void setUniqueAttr(int num_nodes, int frequency) {
         //N/A
+    }
+
+    @Override
+    public void setUniqueAttr(long latency) {
+        this.latency = latency;
     }
 
     @Override
@@ -92,19 +97,12 @@ public class NetworkDelay implements Fault {
         this.fault_type = fault_type;
     }
 
-    public int getDelay() {
-        return delay;
+    public long getLatency() {
+        return latency;
     }
 
-    public void setDelay(int delay) {
-        this.delay = delay;
+    public void setLatency(long latency) {
+        this.latency = latency;
     }
 
-    public int getDelta() {
-        return delta;
-    }
-
-    public void setDelta(int delta) {
-        this.delta = delta;
-    }
 }

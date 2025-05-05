@@ -15,5 +15,7 @@ public interface Fault {
     int insert(FaultDAO faultDAO);
     void setUniqueAttr(int num_nodes);
     void setUniqueAttr(int num_nodes, int frequency);
+    void setUniqueAttr(long latency);
     void setCommonAttr(String username, String name, int duration, String fault_type);
+
 }
