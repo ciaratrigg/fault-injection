@@ -249,9 +249,11 @@ public class DockerService {
     public void bandwidthThrottle(String proxyName, long rate, Duration duration) {
         executorService.submit(() -> {
             try {
+                toxiproxyService.createProxy(proxyName, listen, upstream);
                 toxiproxyService.addBandwidth(proxyName, rate);
                 Thread.sleep(duration.toMillis());
                 toxiproxyService.removeToxic(proxyName, "bandwidth");
+                toxiproxyService.deleteProxy(proxyName);
             } catch (Exception e) {
                 LOGGER.severe("Error simulating bandwidth throttling: " + e.getMessage());
             }

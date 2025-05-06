@@ -11,6 +11,20 @@ public class BandwidthThrottle implements Fault{
     private int scheduled_for;
     private String fault_type;
 
+    public BandwidthThrottle(int f_id, String username, String name, int duration, int scheduled_for, String fault_type, long rate) {
+        this.f_id = f_id;
+        this.username = username;
+        this.name = name;
+        this.duration = duration;
+        this.scheduled_for = scheduled_for;
+        this.fault_type = fault_type;
+        this.rate = rate;
+    }
+
+    public BandwidthThrottle() {
+
+    }
+
     public long getRate() {
         return rate;
     }

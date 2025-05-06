@@ -48,6 +48,10 @@ public class FaultDAOImpl implements FaultDAO {
                 case "cpu-stress-sc":
                     faults.add(selectCpuStressSidecarById(bf.getF_id()));
                     break;
+                case "network-delay":
+                    faults.add(selectNetworkDelayById(bf.getF_id()));
+                case "bandwidth-throttle":
+                    faults.add(selectBandwidthThrottleById(bf.getF_id()));
                 default:
                     logger.warn("Unknown fault type: " + faultType + " for fault id: " + bf.getF_id());
                     break;
@@ -124,6 +128,8 @@ public class FaultDAOImpl implements FaultDAO {
                 return selectCpuStressSidecarById(baseFault.getF_id());
             case "network-delay":
                 return selectNetworkDelayById(baseFault.getF_id());
+            case "bandwidth-throttle":
+                return selectBandwidthThrottleById(baseFault.getF_id());
             default:
                 throw new UnsupportedOperationException("Unknown fault type: " + faultType);
         }
@@ -155,6 +161,13 @@ public class FaultDAOImpl implements FaultDAO {
                 "FROM fault JOIN cpu_usage ON fault.f_id = cpu_usage.f_id " +
                 "WHERE fault.f_id = ?";
         return jdbcTemplate.queryForObject(sql, new Object[]{faultId}, new CpuStressSidecarMapper());
+    }
+
+    private BandwidthThrottle selectBandwidthThrottleById(int faultId) {
+        String sql = "SELECT fault.*, bandwidth_throttle.rate " +
+                "FROM fault JOIN bandwidth_throttle ON fault.f_id = bandwidth_throttle.f_id " +
+                "WHERE fault.f_id = ?";
+        return jdbcTemplate.queryForObject(sql, new Object[]{faultId}, new BandwidthThrottleMapper());
     }
 
     @Override
@@ -286,6 +299,21 @@ public class FaultDAOImpl implements FaultDAO {
                     rs.getLong("delay")
             );
             return nd;
+        }
+    }
+
+    class BandwidthThrottleMapper implements RowMapper<BandwidthThrottle> {
+        public BandwidthThrottle mapRow(ResultSet rs, int rowNum) throws SQLException{
+            BandwidthThrottle bt = new BandwidthThrottle(
+                    rs.getInt("f_id"),
+                    rs.getString("username"),
+                    rs.getString("name"),
+                    rs.getInt("duration"),
+                    rs.getInt("scheduled_for"),
+                    rs.getString("fault_type"),
+                    rs.getLong("rate")
+            );
+            return bt;
         }
     }
 }
