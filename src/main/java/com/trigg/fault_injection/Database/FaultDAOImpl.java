@@ -122,7 +122,7 @@ public class FaultDAOImpl implements FaultDAO {
 
             case "cpu-stress-sc":
                 return selectCpuStressSidecarById(baseFault.getF_id());
-
+            //TODO selectNetworkDelayById
             default:
                 throw new UnsupportedOperationException("Unknown fault type: " + faultType);
         }
@@ -174,6 +174,21 @@ public class FaultDAOImpl implements FaultDAO {
                 "fault.scheduled_for, fault.fault_type, cpu_usage.num_threads " +
                 "FROM fault JOIN cpu_usage on fault.f_id = cpu_usage.f_id WHERE name = ?";
         return jdbcTemplate.queryForObject(selectCpuStressSidecar, new Object[]{name}, new CpuStressSidecarMapper());
+    }
+
+    @Override
+    public int insertNetworkDelay(NetworkDelay nd) {
+        logger.info("Inserting network delay fault with details: " + nd);
+
+        String insertFault = "INSERT INTO fault(username, name, duration, scheduled_for, fault_type) " +
+                "VALUES (?, ?, ?, ?, ?) RETURNING f_id";
+        Integer faultId = jdbcTemplate.queryForObject(insertFault, Integer.class,
+                nd.getUsername(), nd.getName(), nd.getDuration(), nd.getScheduled_for(), nd.getFault_type());
+
+        String insertNetworkDelay = "INSERT INTO network_delay (f_id, delay) VALUES (?, ?)";
+        jdbcTemplate.update(insertNetworkDelay, faultId, nd.getLatency());
+
+        return faultId;
     }
 
     class FaultMapper implements RowMapper<BaseFault>{

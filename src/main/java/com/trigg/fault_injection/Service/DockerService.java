@@ -3,7 +3,6 @@ package com.trigg.fault_injection.Service;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.model.Container;
-import eu.rekawek.toxiproxy.ToxiproxyClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -13,8 +12,6 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.Logger;
-import eu.rekawek.toxiproxy.Proxy;
-import eu.rekawek.toxiproxy.model.Toxic;
 
 @Service
 public class DockerService {
@@ -178,8 +175,8 @@ public class DockerService {
                 case "cpu-stress-sc":
                     cpuStressSidecar(num_nodes, duration);
                     break;
-                case "network-latency":
-                    networkLatency(proxyName, latencyRateOrPercent, duration);
+                case "network-delay":
+                    networkDelay(proxyName, latencyRateOrPercent, duration);
                     break;
                 case "bandwidth-throttle":
                     bandwidthThrottle(proxyName, latencyRateOrPercent , duration);
@@ -229,7 +226,7 @@ public class DockerService {
         scheduler.shutdown();
     }
 
-    public void networkLatency(String proxyName, long latency, Duration duration) {
+    public void networkDelay(String proxyName, long latency, Duration duration) {
         executorService.submit(() -> {
             try {
                 toxiproxyService.addLatency(proxyName, latency);

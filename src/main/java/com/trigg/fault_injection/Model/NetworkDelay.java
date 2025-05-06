@@ -23,7 +23,7 @@ public class NetworkDelay implements Fault {
 
     @Override
     public int insert(FaultDAO faultDAO) {
-        return 0;
+        return faultDAO.insertNetworkDelay(this);
     }
 
     @Override

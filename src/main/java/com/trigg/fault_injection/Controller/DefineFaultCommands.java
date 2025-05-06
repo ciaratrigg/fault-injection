@@ -79,19 +79,18 @@ public class DefineFaultCommands {
         return defineFaultInternal(FaultType.NODE_CRASH, name, duration, numNodes, null, -1);
     }
 
-    @ShellMethod(key = "define network-latency", value = "Define a network latency fault.")
-    public String defineNetworkLatency(
+    @ShellMethod(key = "define network-delay", value = "Define a network latency fault.")
+    public String defineNetworkDelay(
             @ShellOption(help = "Name of the fault") String name,
             @ShellOption(help = "Duration of the fault in seconds") int duration,
             @ShellOption(help = "Latency in milliseconds") long latency) {
 
-            defineFaultInternal(FaultType.NETWORK_LATENCY, name, duration, -1, null, latency);
+            return defineFaultInternal(FaultType.NETWORK_DELAY, name, duration, -1, null, latency);
 
             // Create a proxy if not already created
             //faultService.createProxy(name, "listen", "upstream");
             //toxiproxyService.createProxy(name, "localhost:8666", "localhost:3306"); // Example ports
             //dockerService.simulateNetworkLatency(name, latencyMs, Duration.ofSeconds(duration));
-            return "Successfully created network latency fault: " + name;
     }
 
 
