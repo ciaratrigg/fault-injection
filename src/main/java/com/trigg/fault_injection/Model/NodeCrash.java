@@ -29,7 +29,7 @@ public class NodeCrash implements Fault {
 
     @Override
     public void inject(DockerService dockerService) {
-        dockerService.scheduleFault(this.name, this.fault_type, this.scheduled_for, this.duration, -1, this.num_nodes);
+        dockerService.scheduleFault(this.name, this.fault_type, this.scheduled_for, this.duration, -1, this.num_nodes, null, -1);
     }
 
     @Override
@@ -45,6 +45,11 @@ public class NodeCrash implements Fault {
     @Override
     public void setUniqueAttr(int num_nodes, int frequency) {
         //N/A
+    }
+
+    @Override
+    public void setUniqueAttr(long latency) {
+
     }
 
     @Override

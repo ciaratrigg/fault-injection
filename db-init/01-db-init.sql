@@ -44,15 +44,12 @@ CREATE TABLE IF NOT EXISTS node_restart (
 CREATE TABLE IF NOT EXISTS bandwidth_throttle (
   f_id INT REFERENCES fault(f_id) ON DELETE CASCADE,
   rate INT,
-  burst INT,
-  latency INT,
   PRIMARY KEY (f_id)
 );
 
-CREATE TABLE IF NOT EXISTS network_latency (
+CREATE TABLE IF NOT EXISTS network_delay (
   f_id INT REFERENCES fault(f_id) ON DELETE CASCADE,
   delay INT,
-  delta INT,
   PRIMARY KEY (f_id)
 );
 
@@ -74,6 +71,6 @@ ALTER TABLE fault OWNER TO docker;
 ALTER TABLE cpu_usage OWNER TO docker;
 ALTER TABLE node_restart OWNER TO docker;
 ALTER TABLE bandwidth_throttle OWNER TO docker;
-ALTER TABLE network_latency OWNER TO docker;
+ALTER TABLE network_delay OWNER TO docker;
 ALTER TABLE node_crash OWNER TO docker;
 ALTER TABLE packet_loss OWNER TO docker;

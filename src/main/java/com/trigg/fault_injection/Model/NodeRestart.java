@@ -29,7 +29,7 @@ public class NodeRestart implements Fault {
 
     @Override
     public void inject(DockerService dockerService) {
-        dockerService.scheduleFault(this.name, this.fault_type, this.scheduled_for, this.duration, this.frequency, this.num_nodes);
+        dockerService.scheduleFault(this.name, this.fault_type, this.scheduled_for, this.duration, this.frequency, this.num_nodes, null, -1);
     }
 
     @Override
@@ -46,6 +46,11 @@ public class NodeRestart implements Fault {
     public void setUniqueAttr(int num_nodes, int frequency) {
         this.num_nodes = num_nodes;
         this.frequency = frequency;
+    }
+
+    @Override
+    public void setUniqueAttr(long latency) {
+
     }
 
     @Override

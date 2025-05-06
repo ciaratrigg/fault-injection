@@ -1,9 +1,6 @@
 package com.trigg.fault_injection.Database;
 
-import com.trigg.fault_injection.Model.CpuStressSidecar;
-import com.trigg.fault_injection.Model.Fault;
-import com.trigg.fault_injection.Model.NodeCrash;
-import com.trigg.fault_injection.Model.NodeRestart;
+import com.trigg.fault_injection.Model.*;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -20,4 +17,7 @@ public interface FaultDAO {
     NodeCrash selectNodeCrash(String name);
     NodeRestart selectNodeRestart(String name);
     CpuStressSidecar selectCpuStressSidecar(String name);
+    int insertNetworkDelay(NetworkDelay nd);
+    int insertBandwidthThrottle(BandwidthThrottle bt);
+
 }
