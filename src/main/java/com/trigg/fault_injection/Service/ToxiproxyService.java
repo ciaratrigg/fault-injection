@@ -4,20 +4,24 @@ import eu.rekawek.toxiproxy.ToxiproxyClient;
 import eu.rekawek.toxiproxy.Proxy;
 import eu.rekawek.toxiproxy.model.Toxic;
 import eu.rekawek.toxiproxy.model.ToxicDirection;
+import jakarta.annotation.PreDestroy;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 @Service
 public class ToxiproxyService {
 
-    private final ToxiproxyClient client;
-    private final Map<String, Proxy> proxies = new HashMap<>();
+    private ToxiproxyClient client;
+    private Map<String, Proxy> proxies = new HashMap<>();
+    private static final Logger LOGGER = Logger.getLogger(ToxiproxyService.class.getName());
+
 
     public ToxiproxyService() throws IOException {
-        this.client = new ToxiproxyClient("localhost", 8474);
+        this.client = new ToxiproxyClient("host.docker.internal", 8474);
     }
 
     public Proxy createProxy(String name, String listen, String upstream) throws IOException {
@@ -64,4 +68,16 @@ public class ToxiproxyService {
             proxies.remove(proxyName);
         }
     }
+
+    @PreDestroy
+    public void cleanup() {
+        try {
+            for (String proxyName : proxies.keySet()) {
+                deleteProxy(proxyName);
+            }
+        } catch (IOException e) {
+            LOGGER.severe("Error during cleanup: " + e.getMessage());
+        }
+    }
+
 }

@@ -30,6 +30,12 @@ public class DockerService {
     @Value("${docker.tgtlabel}")
     private String targetLabel;
 
+    @Value("${toxiport}")
+    private String listen;
+
+    @Value("${upstreamport}")
+    private String upstream;
+
     public List<Container> targetSystemContainers() {
         System.out.println("Filtering containers with label: " + targetLabel);
 
@@ -229,9 +235,11 @@ public class DockerService {
     public void networkDelay(String proxyName, long latency, Duration duration) {
         executorService.submit(() -> {
             try {
+                toxiproxyService.createProxy(proxyName, listen, upstream);
                 toxiproxyService.addLatency(proxyName, latency);
                 Thread.sleep(duration.toMillis());
                 toxiproxyService.removeToxic(proxyName, "latency");
+                toxiproxyService.deleteProxy(proxyName);
             } catch (Exception e) {
                 LOGGER.severe("Error simulating network latency: " + e.getMessage());
             }

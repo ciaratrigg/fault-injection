@@ -33,7 +33,9 @@ public class FaultService {
     }
 
     public String injectRequestedFault(String name, String username, String role, int scheduledFor){
+
         Fault fault = faultDAO.selectFaultByName(name);
+
         if(fault.getUsername().equalsIgnoreCase(username) || role.equalsIgnoreCase("ROLE_ADMIN")){
             fault.setScheduled_for(scheduledFor);
             fault.inject(dockerService);

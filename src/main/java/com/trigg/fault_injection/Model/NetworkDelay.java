@@ -12,6 +12,15 @@ public class NetworkDelay implements Fault {
     private String fault_type;
     private long latency;
 
+    public NetworkDelay(int f_id, String username, String name, int duration, int scheduled_for, String fault_type, long latency) {
+        this.f_id = f_id;
+        this.username = username;
+        this.name = name;
+        this.duration = duration;
+        this.scheduled_for = scheduled_for;
+        this.fault_type = fault_type;
+        this.latency = latency;
+    }
 
     public NetworkDelay() {
     }

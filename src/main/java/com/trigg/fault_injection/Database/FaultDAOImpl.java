@@ -122,7 +122,8 @@ public class FaultDAOImpl implements FaultDAO {
 
             case "cpu-stress-sc":
                 return selectCpuStressSidecarById(baseFault.getF_id());
-            //TODO selectNetworkDelayById
+            case "network-delay":
+                return selectNetworkDelayById(baseFault.getF_id());
             default:
                 throw new UnsupportedOperationException("Unknown fault type: " + faultType);
         }
@@ -133,6 +134,13 @@ public class FaultDAOImpl implements FaultDAO {
                 "FROM fault JOIN node_crash ON fault.f_id = node_crash.f_id " +
                 "WHERE fault.f_id = ?";
         return jdbcTemplate.queryForObject(sql, new Object[]{faultId}, new NodeCrashMapper());
+    }
+
+    private NetworkDelay selectNetworkDelayById(int faultId) {
+        String sql = "SELECT fault.*, network_delay.delay " +
+                "FROM fault JOIN network_delay ON fault.f_id = network_delay.f_id " +
+                "WHERE fault.f_id = ?";
+        return jdbcTemplate.queryForObject(sql, new Object[]{faultId}, new NetworkDelayMapper());
     }
 
     private NodeRestart selectNodeRestartById(int faultId) {
@@ -248,6 +256,21 @@ public class FaultDAOImpl implements FaultDAO {
                     rs.getInt("num_threads")
             );
             return css;
+        }
+    }
+
+    class NetworkDelayMapper implements RowMapper<NetworkDelay> {
+        public NetworkDelay mapRow(ResultSet rs, int rowNum) throws SQLException{
+            NetworkDelay nd = new NetworkDelay(
+                    rs.getInt("f_id"),
+                    rs.getString("username"),
+                    rs.getString("name"),
+                    rs.getInt("duration"),
+                    rs.getInt("scheduled_for"),
+                    rs.getString("fault_type"),
+                    rs.getLong("delay")
+            );
+            return nd;
         }
     }
 }
