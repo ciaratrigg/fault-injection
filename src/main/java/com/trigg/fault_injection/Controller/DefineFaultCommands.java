@@ -79,19 +79,21 @@ public class DefineFaultCommands {
         return defineFaultInternal(FaultType.NODE_CRASH, name, duration, numNodes, null, -1);
     }
 
-    @ShellMethod(key = "define network-delay", value = "Define a network latency fault.")
+    @ShellMethod(key = "define network-delay", value = "Define a network delay fault.")
     public String defineNetworkDelay(
             @ShellOption(help = "Name of the fault") String name,
             @ShellOption(help = "Duration of the fault in seconds") int duration,
             @ShellOption(help = "Latency in milliseconds") long latency) {
 
             return defineFaultInternal(FaultType.NETWORK_DELAY, name, duration, -1, null, latency);
-
-            // Create a proxy if not already created
-            //faultService.createProxy(name, "listen", "upstream");
-            //toxiproxyService.createProxy(name, "localhost:8666", "localhost:3306"); // Example ports
-            //dockerService.simulateNetworkLatency(name, latencyMs, Duration.ofSeconds(duration));
     }
 
+    @ShellMethod(key = "define bandwidth-throttle", value = "Define a bandwidth throttle fault.")
+    public String defineBandwidthThrottle(
+            @ShellOption(help = "Name of the fault") String name,
+            @ShellOption(help = "Duration of the fault in seconds") int duration,
+            @ShellOption(help = "Rate in kbps") long rate) {
 
+        return defineFaultInternal(FaultType.BANDWIDTH_THROTTLE, name, duration, -1, null, rate);
+    }
 }

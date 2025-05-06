@@ -199,6 +199,21 @@ public class FaultDAOImpl implements FaultDAO {
         return faultId;
     }
 
+    @Override
+    public int insertBandwidthThrottle(BandwidthThrottle bt) {
+        logger.info("Inserting bandwidth throttle fault with details: " + bt);
+
+        String insertFault = "INSERT INTO fault(username, name, duration, scheduled_for, fault_type) " +
+                "VALUES (?, ?, ?, ?, ?) RETURNING f_id";
+        Integer faultId = jdbcTemplate.queryForObject(insertFault, Integer.class,
+                bt.getUsername(), bt.getName(), bt.getDuration(), bt.getScheduled_for(), bt.getFault_type());
+
+        String insertBandwidthThrottle = "INSERT INTO bandwidth_throttle (f_id, rate) VALUES (?, ?)";
+        jdbcTemplate.update(insertBandwidthThrottle, faultId, bt.getRate());
+
+        return faultId;
+    }
+
     class FaultMapper implements RowMapper<BaseFault>{
         public BaseFault mapRow(ResultSet rs, int rowNum) throws SQLException{
             BaseFault bf = new BaseFault(

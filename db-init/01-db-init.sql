@@ -44,8 +44,6 @@ CREATE TABLE IF NOT EXISTS node_restart (
 CREATE TABLE IF NOT EXISTS bandwidth_throttle (
   f_id INT REFERENCES fault(f_id) ON DELETE CASCADE,
   rate INT,
-  burst INT,
-  latency INT,
   PRIMARY KEY (f_id)
 );
 

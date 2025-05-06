@@ -4,7 +4,8 @@ public enum FaultType {
     NODE_RESTART("node-restart"),
     CPU_STRESS_SC("cpu-stress-sc"),
     NODE_CRASH("node-crash"),
-    NETWORK_DELAY("network-delay");
+    NETWORK_DELAY("network-delay"),
+    BANDWIDTH_THROTTLE("bandwidth-throttle");
 
     private final String typeName;
 

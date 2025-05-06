@@ -18,5 +18,6 @@ public interface FaultDAO {
     NodeRestart selectNodeRestart(String name);
     CpuStressSidecar selectCpuStressSidecar(String name);
     int insertNetworkDelay(NetworkDelay nd);
+    int insertBandwidthThrottle(BandwidthThrottle bt);
 
 }
