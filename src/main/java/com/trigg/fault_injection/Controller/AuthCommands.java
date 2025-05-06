@@ -4,13 +4,13 @@ import com.trigg.fault_injection.Model.UserAccount;
 import com.trigg.fault_injection.Service.AppUserService;
 import com.trigg.fault_injection.Utilities.ShellAuthContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 
-import java.util.Collections;
+import java.io.Console;
+import java.util.Scanner;
 
 @ShellComponent
 public class AuthCommands {
@@ -25,7 +25,7 @@ public class AuthCommands {
         this.appUserService = appUserService;
     }
 
-    public void setPasswordEncoder(PasswordEncoder passwordEncoder){
+    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -43,45 +43,48 @@ public class AuthCommands {
         return "User registered, awaiting approval from administrator.";
     }
 
-
-    @ShellMethod("Login with your username and password")
-    public String login(@ShellOption String username, @ShellOption String password) {
-        if(!authContext.isAuthenticated()){
-            UserAccount account = appUserService.retrieveAccount(username);
-            if(account == null){
-                return "User not found";
-            }
-
-            else{
-                if (!passwordEncoder.matches(password, account.getPassword())) {
-                    return "Incorrect password, login unsuccessful.";
-                }
-
-                if (!account.isApproved()) {
-                    return "Account not approved. Please contact an admin.";
-                }
-
-                String userRole = appUserService.getUserRole(account.getId());
-
-                authContext.login(username, userRole);
-                return "Login successful. Welcome, " + username + "!";
-            }
-        }
-        else{
+    @ShellMethod("Login with your username (you will be prompted for your password)")
+    public String login(@ShellOption String username) {
+        if (authContext.isAuthenticated()) {
             return "Already logged in as " + authContext.getUsername();
         }
-    }
 
+        String password;
+        Console console = System.console();
+        if (console != null) {
+            char[] passwordChars = console.readPassword("Enter password: ");
+            password = new String(passwordChars);
+        } else {
+            System.out.print("Enter password (WARNING: input will be visible): ");
+            Scanner scanner = new Scanner(System.in);
+            password = scanner.nextLine();
+        }
+
+        UserAccount account = appUserService.retrieveAccount(username);
+        if (account == null) {
+            return "User not found";
+        }
+
+        if (!passwordEncoder.matches(password, account.getPassword())) {
+            return "Incorrect password, login unsuccessful.";
+        }
+
+        if (!account.isApproved()) {
+            return "Account not approved. Please contact an admin.";
+        }
+
+        String userRole = appUserService.getUserRole(account.getId());
+        authContext.login(username, userRole);
+        return "Login successful. Welcome, " + username + "!";
+    }
 
     @ShellMethod("Logout of the current session")
     public String logout() {
-        if(authContext.isAuthenticated()){
+        if (authContext.isAuthenticated()) {
             authContext.logout();
             return "Logged out.";
-        }
-        else{
+        } else {
             return "Not currently logged in";
         }
     }
-
 }
