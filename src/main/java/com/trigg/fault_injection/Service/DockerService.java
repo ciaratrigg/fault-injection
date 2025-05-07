@@ -27,14 +27,14 @@ public class DockerService {
     @Value("${docker.network}")
     private String targetNetwork;
 
-    @Value("${docker.tgtlabel}")
-    private String targetLabel;
-
     @Value("${toxiport}")
     private String listen;
 
     @Value("${upstreamport}")
     private String upstream;
+
+    @Value("${docker.tgtlabel}")
+    private String targetLabel;
 
     public List<Container> targetSystemContainers() {
         System.out.println("Filtering containers with label: " + targetLabel);

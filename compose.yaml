@@ -27,8 +27,10 @@ services:
       - DB_URL=jdbc:postgresql://DB:5432/docker
       - DB_USER=docker
       - DB_PASSWORD=pswd-docker
+      # Tells the Java application where to access the Docker daemon
       - DOCKER_HOST=unix:///var/run/docker.sock
     volumes:
+      # Mounts the Docker socket from host machine into the container
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - DB
