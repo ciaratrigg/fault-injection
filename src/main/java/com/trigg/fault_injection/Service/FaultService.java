@@ -23,7 +23,6 @@ public class FaultService {
     }
 
     public Fault defineFault(String type){
-        //TODO duplicate name handling
         Fault fault = faultFactory.createFault(type);
         return fault;
     }

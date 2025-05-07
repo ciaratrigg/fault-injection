@@ -119,7 +119,6 @@ public class NodeCrash implements Fault {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Fault ID       : ").append(f_id).append("\n");
         sb.append("Username       : ").append(username).append("\n");
         sb.append("Name           : ").append(name).append("\n");
         sb.append("Duration       : ").append(duration).append("s\n");

@@ -102,4 +102,16 @@ public class BandwidthThrottle implements Fault{
         this.duration = duration;
         this.fault_type = fault_type;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Username       : ").append(username).append("\n");
+        sb.append("Name           : ").append(name).append("\n");
+        sb.append("Duration       : ").append(duration).append("s\n");
+        sb.append("Fault Type     : ").append(fault_type).append("\n");
+        sb.append("Rate           : ").append(rate).append("\n");
+
+        return sb.toString();
+    }
 }
