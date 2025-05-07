@@ -3,6 +3,7 @@ package com.trigg.fault_injection.Service;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.model.Container;
+import com.trigg.fault_injection.Utilities.FaultLog;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,7 @@ public class DockerService {
     private ScheduledExecutorService scheduler;
     private List<ScheduledJob> scheduledJobs;
     private ToxiproxyService toxiproxyService;
+    private FaultLog faultLog;
 
     private static final Logger LOGGER = Logger.getLogger(DockerService.class.getName());
 
@@ -53,6 +55,7 @@ public class DockerService {
         this.scheduler = Executors.newScheduledThreadPool(5);
         this.scheduledJobs = Collections.synchronizedList(new ArrayList<>());
         this.toxiproxyService = new ToxiproxyService();
+        this.faultLog = new FaultLog();
     }
 
     public List<String> listContainerIds() {
@@ -77,6 +80,7 @@ public class DockerService {
 
                 for (String id : toStop) {
                     dockerClient.stopContainerCmd(id).exec();
+                    faultLog.addEvent("node-crash", id);
                     LOGGER.info("Stopped container: " + id);
                 }
 
