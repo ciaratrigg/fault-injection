@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Fault Injection Timeline</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <meta http-equiv="refresh" content="5">
+</head>
+<body class="p-4 bg-light">
+
+<div class="container">
+    <h2 class="mb-4">Fault Injection Timeline</h2>
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+        <tr>
+            <th>Timestamp</th>
+            <th>Fault Type</th>
+            <th>Target Container</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="event : ${faults}">
+            <td th:text="${#temporals.format(event.timestamp, 'yyyy-MM-dd HH:mm:ss')}"></td>
+            <td th:text="${event.faultType}"></td>
+            <td th:text="${event.targetContainer}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>
