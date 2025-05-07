@@ -50,8 +50,10 @@ public class FaultDAOImpl implements FaultDAO {
                     break;
                 case "network-delay":
                     faults.add(selectNetworkDelayById(bf.getF_id()));
+                    break;
                 case "bandwidth-throttle":
                     faults.add(selectBandwidthThrottleById(bf.getF_id()));
+                    break;
                 default:
                     logger.warn("Unknown fault type: " + faultType + " for fault id: " + bf.getF_id());
                     break;
@@ -63,8 +65,6 @@ public class FaultDAOImpl implements FaultDAO {
 
     @Override
     public int insertNodeCrash(NodeCrash nc) {
-        logger.info("Inserting node crash fault with details: " + nc);
-
         String insertFault = "INSERT INTO fault(username, name, duration, scheduled_for, fault_type) " +
                 "VALUES (?, ?, ?, ?, ?) RETURNING f_id";
         Integer faultId = jdbcTemplate.queryForObject(insertFault, Integer.class,
@@ -72,14 +72,12 @@ public class FaultDAOImpl implements FaultDAO {
 
         String insertNodeCrash = "INSERT INTO node_crash (f_id, num_nodes) VALUES (?, ?)";
         jdbcTemplate.update(insertNodeCrash, faultId, nc.getNum_nodes());
-
+        logger.info("Inserting node crash fault with details: \n" + nc);
         return faultId;
     }
 
     @Override
     public int insertNodeRestart(NodeRestart nr) {
-        logger.info("Inserting node restart fault with details: " + nr);
-
         String insertFault = "INSERT INTO fault(username, name, duration, scheduled_for, fault_type) " +
                 "VALUES (?, ?, ?, ?, ?) RETURNING f_id";
         Integer faultId = jdbcTemplate.queryForObject(insertFault, Integer.class,
@@ -87,6 +85,7 @@ public class FaultDAOImpl implements FaultDAO {
 
         String insertNodeRestart = "INSERT INTO node_restart (f_id, num_nodes, frequency) VALUES (?, ?, ?)";
         jdbcTemplate.update(insertNodeRestart, faultId, nr.getNum_nodes(), nr.getFrequency());
+        logger.info("Inserting node restart fault with details: \n" + nr);
 
         return faultId;
     }
@@ -102,6 +101,7 @@ public class FaultDAOImpl implements FaultDAO {
 
         String insertCpuStress = "INSERT INTO cpu_usage (f_id, num_threads) VALUES (?, ?)";
         jdbcTemplate.update(insertCpuStress, faultId, css.getNum_threads());
+        logger.info("Inserting cpu stress sidecar fault with details: \n" + css);
 
         return faultId;
     }
@@ -199,8 +199,6 @@ public class FaultDAOImpl implements FaultDAO {
 
     @Override
     public int insertNetworkDelay(NetworkDelay nd) {
-        logger.info("Inserting network delay fault with details: " + nd);
-
         String insertFault = "INSERT INTO fault(username, name, duration, scheduled_for, fault_type) " +
                 "VALUES (?, ?, ?, ?, ?) RETURNING f_id";
         Integer faultId = jdbcTemplate.queryForObject(insertFault, Integer.class,
@@ -208,14 +206,13 @@ public class FaultDAOImpl implements FaultDAO {
 
         String insertNetworkDelay = "INSERT INTO network_delay (f_id, delay) VALUES (?, ?)";
         jdbcTemplate.update(insertNetworkDelay, faultId, nd.getLatency());
+        logger.info("Inserting network delay fault with details: \n" + nd);
 
         return faultId;
     }
 
     @Override
     public int insertBandwidthThrottle(BandwidthThrottle bt) {
-        logger.info("Inserting bandwidth throttle fault with details: " + bt);
-
         String insertFault = "INSERT INTO fault(username, name, duration, scheduled_for, fault_type) " +
                 "VALUES (?, ?, ?, ?, ?) RETURNING f_id";
         Integer faultId = jdbcTemplate.queryForObject(insertFault, Integer.class,
@@ -223,6 +220,7 @@ public class FaultDAOImpl implements FaultDAO {
 
         String insertBandwidthThrottle = "INSERT INTO bandwidth_throttle (f_id, rate) VALUES (?, ?)";
         jdbcTemplate.update(insertBandwidthThrottle, faultId, bt.getRate());
+        logger.info("Inserting bandwidth throttle fault with details: \n" + bt);
 
         return faultId;
     }

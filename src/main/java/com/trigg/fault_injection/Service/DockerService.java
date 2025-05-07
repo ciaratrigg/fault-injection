@@ -100,19 +100,16 @@ public class DockerService {
         });
     }
 
-
-
-    public void restartContainers(int num_nodes, int frequency, Duration duration) {
+    public void restartContainers(int num_nodes, int frequencySeconds, Duration duration) {
         executorService.submit(() -> {
             try {
                 List<String> ids = listContainerIds();
-                if (ids.size() <= 1 || frequency <= 0) return;
+                if (ids.size() <= 1 || frequencySeconds <= 0) return;
 
                 int maxRestartable = Math.min(num_nodes, ids.size() - 1);
                 Collections.shuffle(ids);
                 List<String> toRestart = ids.subList(0, maxRestartable);
 
-                long delayBetweenRestartsMillis = duration.toMillis() / frequency;
                 long endTime = System.currentTimeMillis() + duration.toMillis();
 
                 while (System.currentTimeMillis() < endTime) {
@@ -124,7 +121,7 @@ public class DockerService {
                             LOGGER.warning("Failed to restart container: " + id);
                         }
                     }
-                    Thread.sleep(delayBetweenRestartsMillis);
+                    Thread.sleep(frequencySeconds * 1000L);
                 }
 
             } catch (Exception e) {
@@ -132,6 +129,7 @@ public class DockerService {
             }
         });
     }
+
 
     public void cpuStressSidecar(int num_nodes, Duration duration) {
         executorService.submit(() -> {

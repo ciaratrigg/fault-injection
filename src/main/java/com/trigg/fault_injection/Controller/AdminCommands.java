@@ -4,8 +4,6 @@ import com.trigg.fault_injection.Model.UserAccount;
 import com.trigg.fault_injection.Service.AppUserService;
 import com.trigg.fault_injection.Utilities.ShellAuthContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;

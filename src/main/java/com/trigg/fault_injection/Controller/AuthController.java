@@ -19,13 +19,11 @@ import java.util.Map;
 public class AuthController {
     private UserDAO userDAO;
     private PasswordEncoder passwordEncoder;
-    private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public AuthController(UserDAO userDAO, PasswordEncoder passwordEncoder, JdbcTemplate jdbcTemplate){
+    public AuthController(UserDAO userDAO, PasswordEncoder passwordEncoder){
         this.userDAO = userDAO;
         this.passwordEncoder = passwordEncoder;
-        this.jdbcTemplate = jdbcTemplate;
     }
 
     @PostMapping("/register")
