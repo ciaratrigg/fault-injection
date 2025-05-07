@@ -116,6 +116,7 @@ public class DockerService {
                     for (String id : toRestart) {
                         try {
                             dockerClient.restartContainerCmd(id).exec();
+                            faultLog.addEvent("node-restart", id);
                             LOGGER.info("Restarted container: " + id);
                         } catch (Exception e) {
                             LOGGER.warning("Failed to restart container: " + id);
@@ -144,6 +145,7 @@ public class DockerService {
 
                     String containerId = container.getId();
                     dockerClient.startContainerCmd(containerId).exec();
+                    faultLog.addEvent("cpu-stress-sc", containerId);
                     sidecarIds.add(containerId);
                     LOGGER.info("Started CPU stress sidecar: " + containerId);
                 }
@@ -239,6 +241,7 @@ public class DockerService {
             try {
                 toxiproxyService.createProxy(proxyName, listen, upstream);
                 toxiproxyService.addLatency(proxyName, latency);
+                faultLog.addEvent("network-delay", proxyName);
                 Thread.sleep(duration.toMillis());
                 toxiproxyService.removeToxic(proxyName, "latency");
                 toxiproxyService.deleteProxy(proxyName);
@@ -253,6 +256,7 @@ public class DockerService {
             try {
                 toxiproxyService.createProxy(proxyName, listen, upstream);
                 toxiproxyService.addBandwidth(proxyName, rate);
+                faultLog.addEvent("bandwidth-throttle", proxyName);
                 Thread.sleep(duration.toMillis());
                 toxiproxyService.removeToxic(proxyName, "bandwidth");
                 toxiproxyService.deleteProxy(proxyName);

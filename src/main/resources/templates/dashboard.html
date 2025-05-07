@@ -28,5 +28,23 @@
     </table>
 </div>
 
+<div class="container">
+    <h2 class="mb-4">Target Containers</h2>
+    <table class="table table-bordered table-striped">
+        <thead class="table-secondary">
+        <tr>
+            <th>Name</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="container : ${containers}">
+            <td th:text="${container.name}"></td>
+            <td th:text="${container.status}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
 </body>
 </html>

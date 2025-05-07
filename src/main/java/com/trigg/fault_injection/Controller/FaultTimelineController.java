@@ -1,7 +1,9 @@
 package com.trigg.fault_injection.Controller;
 
 import com.trigg.fault_injection.Model.FaultEvent;
+import com.trigg.fault_injection.Service.ContainerInfoService;
 import com.trigg.fault_injection.Utilities.FaultLog;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,15 +15,21 @@ import java.util.List;
 public class FaultTimelineController {
 
     private final FaultLog faultLog;
+    private ContainerInfoService containerInfoService;
 
-    public FaultTimelineController(FaultLog faultLog) {
+    @Autowired
+    public FaultTimelineController(FaultLog faultLog, ContainerInfoService containerInfoService) {
         this.faultLog = faultLog;
+        this.containerInfoService = containerInfoService;
     }
 
     @GetMapping("/dashboard")
     public String showDashboard(Model model) {
         model.addAttribute("faults", faultLog.getEvents());
+        model.addAttribute("containers", containerInfoService.getContainerStatuses());
         return "dashboard";
     }
+
+
 }
 

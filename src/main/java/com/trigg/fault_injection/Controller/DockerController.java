@@ -44,7 +44,6 @@ public class DockerController {
     }
 
     // Immediately injects a pre-defined fault
-    //TODO: fault dne returns error
     @GetMapping("/inject")
     public void injectFault(String type, String name){
         faultService.injectRequestedFault(type, name);
