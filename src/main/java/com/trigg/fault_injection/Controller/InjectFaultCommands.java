@@ -22,7 +22,7 @@ public class InjectFaultCommands {
         this.shellAuthContext = shellAuthContext;
     }
 
-    @ShellMethod(key = "inject")
+    @ShellMethod(key = "inject", value = "Inject a fault into the target system")
     public String injectFault(@ShellOption (help = "Name of a predefined fault") String name,
                               @ShellOption(defaultValue = "0", help = "Scheduled start time in seconds after submission") int scheduledFor) {
         if (!shellAuthContext.isAuthenticated()) {
@@ -37,7 +37,7 @@ public class InjectFaultCommands {
         }
     }
 
-    @ShellMethod(key = "list-jobs")
+    @ShellMethod(key = "list-jobs", value = "List previous/current jobs")
     public String listRunningJobs() {
         return faultService.listAllJobs().stream()
                 .map(Object::toString)

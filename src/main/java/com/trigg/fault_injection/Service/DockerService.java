@@ -81,7 +81,9 @@ public class DockerService {
                 for (String id : toStop) {
                     dockerClient.stopContainerCmd(id).exec();
                     faultLog.addEvent("node-crash", id);
+                    LOGGER.info(String.format("%n%s%n", "-----------------------------------------------------"));
                     LOGGER.info("Stopped container: " + id);
+                    LOGGER.info(String.format("%n%s%n", "-----------------------------------------------------"));
                 }
 
                 Thread.sleep(duration.toMillis());
@@ -89,13 +91,22 @@ public class DockerService {
                 for (String id : toStop) {
                     try {
                         dockerClient.startContainerCmd(id).exec();
+                        LOGGER.info(String.format("%n%s%n", "-----------------------------------------------------"));
                         LOGGER.info("Restarted container: " + id);
+                        LOGGER.info(String.format("%n%s%n", "-----------------------------------------------------"));
+
                     } catch (Exception e) {
+                        LOGGER.info(String.format("%n%s%n", "-----------------------------------------------------"));
                         LOGGER.warning("Failed to restart container: " + id);
+                        LOGGER.info(String.format("%n%s%n", "-----------------------------------------------------"));
+
                     }
                 }
             } catch (Exception e) {
+                LOGGER.info(String.format("%n%s%n", "-----------------------------------------------------"));
                 LOGGER.severe("Error in stopContainers: " + e.getMessage());
+                LOGGER.info(String.format("%n%s%n", "-----------------------------------------------------"));
+
             }
         });
     }
@@ -117,16 +128,24 @@ public class DockerService {
                         try {
                             dockerClient.restartContainerCmd(id).exec();
                             faultLog.addEvent("node-restart", id);
+                            LOGGER.info(String.format("%n%s%n", "-----------------------------------------------------"));
                             LOGGER.info("Restarted container: " + id);
+                            LOGGER.info(String.format("%n%s%n", "-----------------------------------------------------"));
                         } catch (Exception e) {
+                            LOGGER.info(String.format("%n%s%n", "-----------------------------------------------------"));
                             LOGGER.warning("Failed to restart container: " + id);
+                            LOGGER.info(String.format("%n%s%n", "-----------------------------------------------------"));
+
                         }
                     }
                     Thread.sleep(frequencySeconds * 1000L);
                 }
 
             } catch (Exception e) {
+                LOGGER.info(String.format("%n%s%n", "-----------------------------------------------------"));
                 LOGGER.severe("Error in restartContainers: " + e.getMessage());
+                LOGGER.info(String.format("%n%s%n", "-----------------------------------------------------"));
+
             }
         });
     }
@@ -147,21 +166,33 @@ public class DockerService {
                     dockerClient.startContainerCmd(containerId).exec();
                     faultLog.addEvent("cpu-stress-sc", containerId);
                     sidecarIds.add(containerId);
+                    LOGGER.info(String.format("%n%s%n", "-----------------------------------------------------"));
                     LOGGER.info("Started CPU stress sidecar: " + containerId);
+                    LOGGER.info(String.format("%n%s%n", "-----------------------------------------------------"));
+
                 }
 
                 Thread.sleep(duration.toMillis());
 
             } catch (Exception e) {
+                LOGGER.info(String.format("%n%s%n", "-----------------------------------------------------"));
                 LOGGER.severe("Error starting CPU stress sidecars: " + e.getMessage());
+                LOGGER.info(String.format("%n%s%n", "-----------------------------------------------------"));
+
             } finally {
                 for (String containerId : sidecarIds) {
                     try {
                         dockerClient.stopContainerCmd(containerId).exec();
                         dockerClient.removeContainerCmd(containerId).exec();
+                        LOGGER.info(String.format("%n%s%n", "-----------------------------------------------------"));
                         LOGGER.info("Stopped and removed CPU stress sidecar: " + containerId);
+                        LOGGER.info(String.format("%n%s%n", "-----------------------------------------------------"));
+
                     } catch (Exception e) {
+                        LOGGER.info(String.format("%n%s%n", "-----------------------------------------------------"));
                         LOGGER.warning("Failed to stop/remove CPU stress sidecar: " + containerId);
+                        LOGGER.info(String.format("%n%s%n", "-----------------------------------------------------"));
+
                     }
                 }
             }
@@ -173,7 +204,10 @@ public class DockerService {
         Duration duration = Duration.ofSeconds(durationSeconds);
 
         Runnable task = () -> {
+            LOGGER.info(String.format("%n%s%n", "-----------------------------------------------------"));
             LOGGER.info("Executing fault: " + faultName);
+            LOGGER.info(String.format("%n%s%n", "-----------------------------------------------------"));
+
 
             switch (fault_type.toLowerCase()) {
                 case "node-crash":
@@ -194,7 +228,11 @@ public class DockerService {
                 case "packet-loss":
                     packetLoss(proxyName, latencyRateOrPercent, duration);
                 default:
+                    LOGGER.info(String.format("%n%s%n", "-----------------------------------------------------"));
+
                     LOGGER.warning("Unknown fault: " + faultName);
+                    LOGGER.info(String.format("%n%s%n", "-----------------------------------------------------"));
+
             }
         };
 
@@ -207,29 +245,6 @@ public class DockerService {
         return new ArrayList<>(scheduledJobs);
     }
 
-    public void connectToTgtNetwork() {
-        try {
-            dockerClient.connectToNetworkCmd()
-                    .withContainerId(appName)
-                    .withNetworkId(targetNetwork)
-                    .exec();
-            LOGGER.info("Connected to network: " + targetNetwork);
-        } catch (Exception e) {
-            LOGGER.severe("Failed to connect to network: " + e.getMessage());
-        }
-    }
-
-    public void disconnectFromTgtNetwork() {
-        try {
-            dockerClient.disconnectFromNetworkCmd()
-                    .withContainerId(appName)
-                    .withNetworkId(targetNetwork)
-                    .exec();
-            LOGGER.info("Disconnected from network: " + targetNetwork);
-        } catch (Exception e) {
-            LOGGER.severe("Failed to disconnect from network: " + e.getMessage());
-        }
-    }
 
     public void shutdown() {
         executorService.shutdown();
@@ -241,12 +256,18 @@ public class DockerService {
             try {
                 toxiproxyService.createProxy(proxyName, listen, upstream);
                 toxiproxyService.addLatency(proxyName, latency);
+                LOGGER.info(String.format("%n%s%n", "-----------------------------------------------------"));
+                LOGGER.info("Creating proxy: " + proxyName);
+                LOGGER.info(String.format("%n%s%n", "-----------------------------------------------------"));
                 faultLog.addEvent("network-delay", proxyName);
                 Thread.sleep(duration.toMillis());
                 toxiproxyService.removeToxic(proxyName, "latency");
                 toxiproxyService.deleteProxy(proxyName);
             } catch (Exception e) {
+                LOGGER.info(String.format("%n%s%n", "-----------------------------------------------------"));
                 LOGGER.severe("Error simulating network latency: " + e.getMessage());
+                LOGGER.info(String.format("%n%s%n", "-----------------------------------------------------"));
+
             }
         });
     }
@@ -256,6 +277,9 @@ public class DockerService {
             try {
                 toxiproxyService.createProxy(proxyName, listen, upstream);
                 toxiproxyService.addBandwidth(proxyName, rate);
+                LOGGER.info(String.format("%n%s%n", "-----------------------------------------------------"));
+                LOGGER.info("Creating proxy: " + proxyName);
+                LOGGER.info(String.format("%n%s%n", "-----------------------------------------------------"));
                 faultLog.addEvent("bandwidth-throttle", proxyName);
                 Thread.sleep(duration.toMillis());
                 toxiproxyService.removeToxic(proxyName, "bandwidth");
