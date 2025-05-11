@@ -14,9 +14,6 @@ public interface FaultDAO {
     int insertNodeRestart(NodeRestart nr);
     int insertCpuStressSidecar(CpuStressSidecar css);
     Fault selectFaultByName(String faultName);
-    NodeCrash selectNodeCrash(String name);
-    NodeRestart selectNodeRestart(String name);
-    CpuStressSidecar selectCpuStressSidecar(String name);
     int insertNetworkDelay(NetworkDelay nd);
     int insertBandwidthThrottle(BandwidthThrottle bt);
 
