@@ -107,6 +107,34 @@ public class FaultDAOImpl implements FaultDAO {
     }
 
     @Override
+    public int insertNetworkDelay(NetworkDelay nd) {
+        String insertFault = "INSERT INTO fault(username, name, duration, scheduled_for, fault_type) " +
+                "VALUES (?, ?, ?, ?, ?) RETURNING f_id";
+        Integer faultId = jdbcTemplate.queryForObject(insertFault, Integer.class,
+                nd.getUsername(), nd.getName(), nd.getDuration(), nd.getScheduled_for(), nd.getFault_type());
+
+        String insertNetworkDelay = "INSERT INTO network_delay (f_id, delay) VALUES (?, ?)";
+        jdbcTemplate.update(insertNetworkDelay, faultId, nd.getLatency());
+        logger.info("Inserting network delay fault with details: \n" + nd);
+
+        return faultId;
+    }
+
+    @Override
+    public int insertBandwidthThrottle(BandwidthThrottle bt) {
+        String insertFault = "INSERT INTO fault(username, name, duration, scheduled_for, fault_type) " +
+                "VALUES (?, ?, ?, ?, ?) RETURNING f_id";
+        Integer faultId = jdbcTemplate.queryForObject(insertFault, Integer.class,
+                bt.getUsername(), bt.getName(), bt.getDuration(), bt.getScheduled_for(), bt.getFault_type());
+
+        String insertBandwidthThrottle = "INSERT INTO bandwidth_throttle (f_id, rate) VALUES (?, ?)";
+        jdbcTemplate.update(insertBandwidthThrottle, faultId, bt.getRate());
+        logger.info("Inserting bandwidth throttle fault with details: \n" + bt);
+
+        return faultId;
+    }
+
+    @Override
     public Fault selectFaultByName(String name) {
         String selectFault = "SELECT * FROM fault WHERE name = ?";
         BaseFault baseFault = jdbcTemplate.queryForObject(selectFault, new Object[]{name}, new FaultMapper());
@@ -168,61 +196,6 @@ public class FaultDAOImpl implements FaultDAO {
                 "FROM fault JOIN bandwidth_throttle ON fault.f_id = bandwidth_throttle.f_id " +
                 "WHERE fault.f_id = ?";
         return jdbcTemplate.queryForObject(sql, new Object[]{faultId}, new BandwidthThrottleMapper());
-    }
-
-    @Override
-    public NodeCrash selectNodeCrash(String name) {
-        logger.info("Retrieved node crash fault with name " + name);
-        String selectNodeCrash = "SELECT fault.f_id, fault.username, fault.name, fault.duration, " +
-                "fault.scheduled_for, fault.fault_type, node_crash.num_nodes " +
-                "FROM fault JOIN node_crash on fault.f_id = node_crash.f_id WHERE name = ?";
-        return jdbcTemplate.queryForObject(selectNodeCrash, new Object[]{name}, new NodeCrashMapper());
-    }
-
-    @Override
-    public NodeRestart selectNodeRestart(String name) {
-        logger.info("Retrieved node restart fault with name " + name);
-        String selectNodeRestart = "SELECT fault.f_id, fault.username, fault.name, fault.duration, " +
-                "fault.scheduled_for, fault.fault_type, node_restart.num_nodes, node_restart.frequency " +
-                "FROM fault JOIN node_restart on fault.f_id = node_restart.f_id WHERE name = ?";
-        return jdbcTemplate.queryForObject(selectNodeRestart, new Object[]{name}, new NodeRestartMapper());
-    }
-
-    @Override
-    public CpuStressSidecar selectCpuStressSidecar(String name) {
-        logger.info("Retrieved cpu stress sidecar fault with name " + name);
-        String selectCpuStressSidecar = "SELECT fault.f_id, fault.username, fault.name, fault.duration, " +
-                "fault.scheduled_for, fault.fault_type, cpu_usage.num_threads " +
-                "FROM fault JOIN cpu_usage on fault.f_id = cpu_usage.f_id WHERE name = ?";
-        return jdbcTemplate.queryForObject(selectCpuStressSidecar, new Object[]{name}, new CpuStressSidecarMapper());
-    }
-
-    @Override
-    public int insertNetworkDelay(NetworkDelay nd) {
-        String insertFault = "INSERT INTO fault(username, name, duration, scheduled_for, fault_type) " +
-                "VALUES (?, ?, ?, ?, ?) RETURNING f_id";
-        Integer faultId = jdbcTemplate.queryForObject(insertFault, Integer.class,
-                nd.getUsername(), nd.getName(), nd.getDuration(), nd.getScheduled_for(), nd.getFault_type());
-
-        String insertNetworkDelay = "INSERT INTO network_delay (f_id, delay) VALUES (?, ?)";
-        jdbcTemplate.update(insertNetworkDelay, faultId, nd.getLatency());
-        logger.info("Inserting network delay fault with details: \n" + nd);
-
-        return faultId;
-    }
-
-    @Override
-    public int insertBandwidthThrottle(BandwidthThrottle bt) {
-        String insertFault = "INSERT INTO fault(username, name, duration, scheduled_for, fault_type) " +
-                "VALUES (?, ?, ?, ?, ?) RETURNING f_id";
-        Integer faultId = jdbcTemplate.queryForObject(insertFault, Integer.class,
-                bt.getUsername(), bt.getName(), bt.getDuration(), bt.getScheduled_for(), bt.getFault_type());
-
-        String insertBandwidthThrottle = "INSERT INTO bandwidth_throttle (f_id, rate) VALUES (?, ?)";
-        jdbcTemplate.update(insertBandwidthThrottle, faultId, bt.getRate());
-        logger.info("Inserting bandwidth throttle fault with details: \n" + bt);
-
-        return faultId;
     }
 
     class FaultMapper implements RowMapper<BaseFault>{
