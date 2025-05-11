@@ -4,6 +4,7 @@ import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.model.Container;
 import com.trigg.fault_injection.Utilities.FaultLog;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +24,6 @@ public class DockerService {
     private List<ScheduledJob> scheduledJobs;
     private ToxiproxyService toxiproxyService;
     private FaultLog faultLog;
-
     private static final Logger LOGGER = Logger.getLogger(DockerService.class.getName());
 
     @Value("${docker.network}")
@@ -38,24 +38,25 @@ public class DockerService {
     @Value("${docker.tgtlabel}")
     private String targetLabel;
 
+    @Value("${spring.application.name}")
+    private String appName;
+
+    @Autowired
+    public DockerService(DockerClient dockerClient, ToxiproxyService toxiproxyService, FaultLog faultLog) throws IOException {
+        this.dockerClient = dockerClient;
+        this.executorService = Executors.newFixedThreadPool(5);
+        this.scheduler = Executors.newScheduledThreadPool(5);
+        this.scheduledJobs = Collections.synchronizedList(new ArrayList<>());
+        this.toxiproxyService = toxiproxyService;
+        this.faultLog = faultLog;
+    }
+
     public List<Container> targetSystemContainers() {
         System.out.println("Filtering containers with label: " + targetLabel);
 
         return dockerClient.listContainersCmd()
                 .withLabelFilter(Collections.singletonList(targetLabel))
                 .exec();
-    }
-  
-    @Value("${spring.application.name}")
-    private String appName;
-
-    public DockerService(DockerClient dockerClient) throws IOException {
-        this.dockerClient = dockerClient;
-        this.executorService = Executors.newFixedThreadPool(5);
-        this.scheduler = Executors.newScheduledThreadPool(5);
-        this.scheduledJobs = Collections.synchronizedList(new ArrayList<>());
-        this.toxiproxyService = new ToxiproxyService();
-        this.faultLog = new FaultLog();
     }
 
     public List<String> listContainerIds() {
@@ -168,72 +169,8 @@ public class DockerService {
         });
     }
 
-    public void scheduleFault(String faultName, String fault_type, int delaySeconds, int durationSeconds, int frequency, int num_nodes, String proxyName, long latencyRateOrPercent ) {
-        Instant startTime = Instant.now().plusSeconds(delaySeconds);
-        Duration duration = Duration.ofSeconds(durationSeconds);
-
-        Runnable task = () -> {
-            LOGGER.info("Executing fault: " + faultName);
-
-            switch (fault_type.toLowerCase()) {
-                case "node-crash":
-                    stopContainers(num_nodes, duration);
-                    break;
-                case "node-restart":
-                    restartContainers(num_nodes, frequency, duration);
-                    break;
-                case "cpu-stress-sc":
-                    cpuStressSidecar(num_nodes, duration);
-                    break;
-                case "network-delay":
-                    networkDelay(proxyName, latencyRateOrPercent, duration);
-                    break;
-                case "bandwidth-throttle":
-                    bandwidthThrottle(proxyName, latencyRateOrPercent , duration);
-                    break;
-                case "packet-loss":
-                    packetLoss(proxyName, latencyRateOrPercent, duration);
-                default:
-                    LOGGER.warning("Unknown fault: " + faultName);
-            }
-        };
-
-        Future<?> future = scheduler.schedule(task, delaySeconds, TimeUnit.SECONDS);
-        scheduledJobs.add(new ScheduledJob(faultName, startTime, duration, future));
-    }
-
-
-    public List<ScheduledJob> getScheduledJobs() {
-        return new ArrayList<>(scheduledJobs);
-    }
-
-    public void connectToTgtNetwork() {
-        try {
-            dockerClient.connectToNetworkCmd()
-                    .withContainerId(appName)
-                    .withNetworkId(targetNetwork)
-                    .exec();
-            LOGGER.info("Connected to network: " + targetNetwork);
-        } catch (Exception e) {
-            LOGGER.severe("Failed to connect to network: " + e.getMessage());
-        }
-    }
-
-    public void disconnectFromTgtNetwork() {
-        try {
-            dockerClient.disconnectFromNetworkCmd()
-                    .withContainerId(appName)
-                    .withNetworkId(targetNetwork)
-                    .exec();
-            LOGGER.info("Disconnected from network: " + targetNetwork);
-        } catch (Exception e) {
-            LOGGER.severe("Failed to disconnect from network: " + e.getMessage());
-        }
-    }
-
-    public void shutdown() {
-        executorService.shutdown();
-        scheduler.shutdown();
+    public void createProxy(String proxyName, String listen, String upstream) throws IOException {
+        toxiproxyService.createProxy(proxyName, listen, upstream);
     }
 
     public void networkDelay(String proxyName, long latency, Duration duration) {
@@ -266,20 +203,41 @@ public class DockerService {
         });
     }
 
-    public void packetLoss(String proxyName, long lossPercentage, Duration duration) {
-        executorService.submit(() -> {
-            try {
-                toxiproxyService.addPacketLoss(proxyName, lossPercentage);
-                Thread.sleep(duration.toMillis());
-                toxiproxyService.removeToxic(proxyName, "packet_loss");
-            } catch (Exception e) {
-                LOGGER.severe("Error simulating packet loss: " + e.getMessage());
+    public void scheduleFault(String faultName, String fault_type, int delaySeconds, int durationSeconds, int frequency, int num_nodes, String proxyName, long latencyRateOrPercent ) {
+        Instant startTime = Instant.now().plusSeconds(delaySeconds);
+        Duration duration = Duration.ofSeconds(durationSeconds);
+
+        Runnable task = () -> {
+            LOGGER.info("Executing fault: " + faultName);
+
+            switch (fault_type.toLowerCase()) {
+                case "node-crash":
+                    stopContainers(num_nodes, duration);
+                    break;
+                case "node-restart":
+                    restartContainers(num_nodes, frequency, duration);
+                    break;
+                case "cpu-stress-sc":
+                    cpuStressSidecar(num_nodes, duration);
+                    break;
+                case "network-delay":
+                    networkDelay(proxyName, latencyRateOrPercent, duration);
+                    break;
+                case "bandwidth-throttle":
+                    bandwidthThrottle(proxyName, latencyRateOrPercent , duration);
+                    break;
+                default:
+                    LOGGER.warning("Unknown fault: " + faultName);
             }
-        });
+        };
+
+        Future<?> future = scheduler.schedule(task, delaySeconds, TimeUnit.SECONDS);
+        scheduledJobs.add(new ScheduledJob(faultName, startTime, duration, future));
     }
 
-    public void createProxy(String proxyName, String listen, String upstream) throws IOException {
-        toxiproxyService.createProxy(proxyName, listen, upstream);
+
+    public List<ScheduledJob> getScheduledJobs() {
+        return new ArrayList<>(scheduledJobs);
     }
 
     public static class ScheduledJob {

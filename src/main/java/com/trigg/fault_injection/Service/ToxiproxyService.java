@@ -44,12 +44,6 @@ public class ToxiproxyService {
         }
     }
 
-    public void addPacketLoss(String proxyName, long lossPercentage) throws IOException {
-        Proxy proxy = proxies.get(proxyName);
-        if (proxy != null) {
-            proxy.toxics().limitData("packet_loss", ToxicDirection.DOWNSTREAM, lossPercentage);
-        }
-    }
 
     public void removeToxic(String proxyName, String toxicName) throws IOException {
         Proxy proxy = proxies.get(proxyName);
@@ -79,5 +73,4 @@ public class ToxiproxyService {
             LOGGER.severe("Error during cleanup: " + e.getMessage());
         }
     }
-
 }

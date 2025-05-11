@@ -10,6 +10,7 @@ public class BandwidthThrottle implements Fault{
     private int duration;
     private int scheduled_for;
     private String fault_type;
+    private long rate;
 
     public BandwidthThrottle(int f_id, String username, String name, int duration, int scheduled_for, String fault_type, long rate) {
         this.f_id = f_id;
@@ -32,8 +33,6 @@ public class BandwidthThrottle implements Fault{
     public void setRate(long rate) {
         this.rate = rate;
     }
-
-    private long rate;
 
     @Override
     public String getUsername() {
