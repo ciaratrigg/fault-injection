@@ -19,7 +19,6 @@ public class FaultFactory {
         faultSupplier.put("node-restart", NodeRestart::new);
         faultSupplier.put("cpu-stress-sc", CpuStressSidecar::new);
         faultSupplier.put("network-delay", NetworkDelay::new);
-        faultSupplier.put("packet-loss", PacketLoss::new);
         faultSupplier.put("bandwidth-throttle", BandwidthThrottle::new);
     }
 

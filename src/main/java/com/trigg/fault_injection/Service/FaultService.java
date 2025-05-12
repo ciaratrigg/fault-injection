@@ -51,7 +51,4 @@ public class FaultService {
 
     public List<DockerService.ScheduledJob> listAllJobs(){ return dockerService.getScheduledJobs();}
 
-    public void createProxy(String proxyName, String listen, String upstream) throws IOException {
-        dockerService.createProxy(proxyName, listen, upstream);
-    }
 }

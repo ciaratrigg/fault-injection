@@ -3,8 +3,6 @@ package com.trigg.fault_injection.Model;
 import com.trigg.fault_injection.Database.FaultDAO;
 import com.trigg.fault_injection.Service.DockerService;
 
-import java.util.Map;
-
 public class NodeCrash implements Fault {
     int f_id;
     String username;

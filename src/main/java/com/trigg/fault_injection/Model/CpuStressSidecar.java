@@ -50,7 +50,6 @@ public class CpuStressSidecar implements Fault{
 
     }
 
-
     @Override
     public void setCommonAttr(String username, String name, int duration, String fault_type) {
         this.username = username;
