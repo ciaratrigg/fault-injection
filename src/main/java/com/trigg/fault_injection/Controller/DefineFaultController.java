@@ -3,7 +3,7 @@ package com.trigg.fault_injection.Controller;
 import com.trigg.fault_injection.Model.Fault;
 import com.trigg.fault_injection.Model.FaultType;
 import com.trigg.fault_injection.Service.FaultService;
-import com.trigg.fault_injection.Utilities.CurrentUserProvider;
+import com.trigg.fault_injection.Utilities.CurrentUserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
@@ -14,16 +14,16 @@ import org.springframework.web.bind.annotation.*;
 public class DefineFaultController {
 
     private FaultService faultService;
-    private CurrentUserProvider currentUserProvider;
+    private CurrentUserInfo currentUserInfo;
 
     @Autowired
-    public DefineFaultController(FaultService faultService, CurrentUserProvider currentUserProvider){
+    public DefineFaultController(FaultService faultService, CurrentUserInfo currentUserInfo){
         this.faultService = faultService;
-        this.currentUserProvider = currentUserProvider;
+        this.currentUserInfo = currentUserInfo;
     }
 
     private ResponseEntity<String> defineFaultController(FaultType type, String name, int duration, int numNodesOrThreads, Integer frequency, long latency){
-        String curUser = currentUserProvider.getCurrentUsername();
+        String curUser = currentUserInfo.getCurrentUsername();
         if(curUser == null){
             return ResponseEntity.badRequest().body("Must be logged in");
         }
