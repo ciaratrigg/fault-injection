@@ -2,7 +2,7 @@ package com.trigg.fault_injection.Controller;
 
 import com.trigg.fault_injection.Model.UserAccount;
 import com.trigg.fault_injection.Service.AppUserService;
-import com.trigg.fault_injection.Utilities.ShellAuthContext;
+import com.trigg.fault_injection.Utilities.AuthContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
@@ -12,11 +12,11 @@ import java.util.List;
 
 @ShellComponent
 public class AdminCommands {
-    private ShellAuthContext authContext;
+    private AuthContext authContext;
     private AppUserService appUserService;
 
     @Autowired
-    public AdminCommands(ShellAuthContext authContext, AppUserService appUserService) {
+    public AdminCommands(AuthContext authContext, AppUserService appUserService) {
         this.authContext = authContext;
         this.appUserService = appUserService;
     }
