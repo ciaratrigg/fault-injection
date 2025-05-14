@@ -2,11 +2,10 @@ package com.trigg.fault_injection.Utilities;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import java.util.List;
 
 @Component
 @Scope("singleton")
-public class ShellAuthContext {
+public class AuthContext {
     private String currentUsername;
     private String role;
 

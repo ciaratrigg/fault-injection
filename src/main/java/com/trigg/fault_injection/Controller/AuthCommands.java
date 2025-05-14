@@ -2,7 +2,7 @@ package com.trigg.fault_injection.Controller;
 
 import com.trigg.fault_injection.Model.UserAccount;
 import com.trigg.fault_injection.Service.AppUserService;
-import com.trigg.fault_injection.Utilities.ShellAuthContext;
+import com.trigg.fault_injection.Utilities.AuthContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.shell.standard.ShellComponent;
@@ -15,11 +15,11 @@ import java.util.Scanner;
 @ShellComponent
 public class AuthCommands {
     private PasswordEncoder passwordEncoder;
-    private ShellAuthContext authContext;
+    private AuthContext authContext;
     private AppUserService appUserService;
 
     @Autowired
-    public AuthCommands(PasswordEncoder passwordEncoder, ShellAuthContext authContext, AppUserService appUserService) {
+    public AuthCommands(PasswordEncoder passwordEncoder, AuthContext authContext, AppUserService appUserService) {
         this.passwordEncoder = passwordEncoder;
         this.authContext = authContext;
         this.appUserService = appUserService;

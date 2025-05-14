@@ -3,7 +3,7 @@ package com.trigg.fault_injection.Controller;
 import com.trigg.fault_injection.Model.Fault;
 import com.trigg.fault_injection.Model.FaultType;
 import com.trigg.fault_injection.Service.FaultService;
-import com.trigg.fault_injection.Utilities.ShellAuthContext;
+import com.trigg.fault_injection.Utilities.AuthContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.shell.standard.ShellComponent;
@@ -16,21 +16,21 @@ import java.io.IOException;
 public class DefineFaultCommands {
 
     private FaultService faultService;
-    private ShellAuthContext shellAuthContext;
+    private AuthContext authContext;
 
     @Autowired
-    public DefineFaultCommands(FaultService faultService, ShellAuthContext shellAuthContext) throws IOException {
+    public DefineFaultCommands(FaultService faultService, AuthContext authContext) throws IOException {
         this.faultService = faultService;
-        this.shellAuthContext = shellAuthContext;
+        this.authContext = authContext;
     }
 
     private String defineFaultInternal(FaultType type, String name, int duration, int numNodesOrThreads, Integer frequency, long latency) {
-        if (!shellAuthContext.isAuthenticated()) {
+        if (!authContext.isAuthenticated()) {
             return "You must be logged in to run this command.";
         }
         try {
             Fault fault = faultService.defineFault(type.getTypeName());
-            fault.setCommonAttr(shellAuthContext.getUsername(), name, duration, type.getTypeName());
+            fault.setCommonAttr(authContext.getUsername(), name, duration, type.getTypeName());
 
             if (frequency != null) {
                 fault.setUniqueAttr(numNodesOrThreads, frequency);

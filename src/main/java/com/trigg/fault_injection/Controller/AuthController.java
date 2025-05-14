@@ -2,13 +2,12 @@ package com.trigg.fault_injection.Controller;
 
 import com.trigg.fault_injection.Model.UserAccount;
 import com.trigg.fault_injection.Service.AppUserService;
-import com.trigg.fault_injection.Utilities.ShellAuthContext;
+import com.trigg.fault_injection.Utilities.AuthContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -17,10 +16,10 @@ public class AuthController {
 
     private final PasswordEncoder passwordEncoder;
     private final AppUserService appUserService;
-    private final ShellAuthContext authContext;
+    private final AuthContext authContext;
 
     @Autowired
-    public AuthController(PasswordEncoder passwordEncoder, AppUserService appUserService, ShellAuthContext authContext) {
+    public AuthController(PasswordEncoder passwordEncoder, AppUserService appUserService, AuthContext authContext) {
         this.passwordEncoder = passwordEncoder;
         this.appUserService = appUserService;
         this.authContext = authContext;

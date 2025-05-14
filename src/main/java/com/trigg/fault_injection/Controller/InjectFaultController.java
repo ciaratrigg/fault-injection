@@ -1,7 +1,7 @@
 package com.trigg.fault_injection.Controller;
 
 import com.trigg.fault_injection.Service.FaultService;
-import com.trigg.fault_injection.Utilities.CurrentUserInfo;
+import com.trigg.fault_injection.Utilities.AuthContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
@@ -14,25 +14,25 @@ import java.util.stream.Collectors;
 public class InjectFaultController {
 
     private final FaultService faultService;
-    private final CurrentUserInfo currentUserInfo;
+    private final AuthContext authContext;
 
     @Autowired
-    public InjectFaultController(FaultService faultService, CurrentUserInfo currentUserInfo) {
+    public InjectFaultController(FaultService faultService, AuthContext authContext) {
         this.faultService = faultService;
-        this.currentUserInfo = currentUserInfo;
+        this.authContext = authContext;
     }
 
     @PostMapping("/inject")
     public ResponseEntity<String> injectFault(@RequestParam String name, @RequestParam int scheduledFor) {
-        String curUser = currentUserInfo.getCurrentUsername();
+        String curUser = authContext.getUsername();
         if(curUser == null){
             return ResponseEntity.badRequest().body("Must be logged in");
         }
         try {
             String result = faultService.injectRequestedFault(
                     name,
-                    currentUserInfo.getCurrentUsername(),
-                    "role", // You can extract role from SecurityContext if needed
+                    authContext.getUsername(),
+                    authContext.getRole(), // You can extract role from SecurityContext if needed
                     scheduledFor);
             return ResponseEntity.ok(result);
         } catch (DataAccessException e) {

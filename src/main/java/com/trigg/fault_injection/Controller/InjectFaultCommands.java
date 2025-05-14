@@ -1,8 +1,7 @@
 package com.trigg.fault_injection.Controller;
 
-import com.trigg.fault_injection.Model.Fault;
 import com.trigg.fault_injection.Service.FaultService;
-import com.trigg.fault_injection.Utilities.ShellAuthContext;
+import com.trigg.fault_injection.Utilities.AuthContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.shell.standard.ShellComponent;
@@ -14,22 +13,22 @@ import java.util.stream.Collectors;
 @ShellComponent
 public class InjectFaultCommands {
     private FaultService faultService;
-    private ShellAuthContext shellAuthContext;
+    private AuthContext authContext;
 
     @Autowired
-    public InjectFaultCommands(FaultService faultService, ShellAuthContext shellAuthContext){
+    public InjectFaultCommands(FaultService faultService, AuthContext authContext){
         this.faultService = faultService;
-        this.shellAuthContext = shellAuthContext;
+        this.authContext = authContext;
     }
 
     @ShellMethod(key = "inject", value = "Inject a predefined fault")
     public String injectFault(@ShellOption (help = "Name of a predefined fault") String name,
                               @ShellOption(defaultValue = "0", help = "Scheduled start time in seconds after submission") int scheduledFor) {
-        if (!shellAuthContext.isAuthenticated()) {
+        if (!authContext.isAuthenticated()) {
             return "You must be logged in to run this command.";
         }
         try{
-            String result = faultService.injectRequestedFault(name, shellAuthContext.getUsername(), shellAuthContext.getRole(), scheduledFor);
+            String result = faultService.injectRequestedFault(name, authContext.getUsername(), authContext.getRole(), scheduledFor);
             return result;
         }
         catch (DataAccessException e){
