@@ -13,6 +13,10 @@ import java.util.Map;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
+    /*
+     * Defines rest endpoints related to user authorization such as registering an account
+     * logging in, and logging out.
+     */
 
     private final PasswordEncoder passwordEncoder;
     private final AppUserService appUserService;

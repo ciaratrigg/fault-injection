@@ -14,6 +14,11 @@ import java.util.Scanner;
 
 @ShellComponent
 public class AuthCommands {
+    /*
+     * Defines shell commands related to user authorization such as registering an account
+     * logging in, and logging out.
+    */
+
     private PasswordEncoder passwordEncoder;
     private AuthContext authContext;
     private AppUserService appUserService;

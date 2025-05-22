@@ -12,7 +12,11 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/define")
 public class DefineFaultController {
-
+    /*
+     * Defines rest endpoints to define faults and save them in the database.
+     * Fault types include node restart, cpu stress sidecar, node crash,
+     * network delay, and bandwidth throttling.
+     */
     private FaultService faultService;
     private AuthContext authContext;
 

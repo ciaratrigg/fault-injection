@@ -12,6 +12,10 @@ import java.util.List;
 
 @ShellComponent
 public class AdminCommands {
+    /*
+    * Defines shell commands for administrator use such as approving user accounts,
+    * upgrading or downgrading user permissions, and viewing pending users.
+    */
     private AuthContext authContext;
     private AppUserService appUserService;
 

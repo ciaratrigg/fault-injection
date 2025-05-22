@@ -13,7 +13,10 @@ import java.util.List;
 
 @Controller
 public class FaultTimelineController {
-
+    /*
+     * Dynamic dashboard which displays a fault log as well as all
+     * running containers in the target system and their statuses.
+     */
     private final FaultLog faultLog;
     private ContainerInfoService containerInfoService;
 
