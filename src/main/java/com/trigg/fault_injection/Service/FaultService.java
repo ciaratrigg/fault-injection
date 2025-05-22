@@ -11,6 +11,10 @@ import java.util.List;
 
 @Service
 public class FaultService {
+    /*
+     * Service class used to access the FaultDAO.
+     */
+
     private FaultFactory faultFactory;
     private FaultDAOImpl faultDAO;
     private DockerService dockerService;

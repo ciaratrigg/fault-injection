@@ -12,6 +12,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class ContainerInfoService {
+    /*
+     * Collects container statuses for the target system.
+     */
 
     private final DockerClient dockerClient;
 
