@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("api/define")
+@RequestMapping("/define")
 public class DefineFaultController {
 
     private FaultService faultService;
