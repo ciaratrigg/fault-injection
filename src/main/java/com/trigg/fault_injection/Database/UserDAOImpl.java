@@ -18,6 +18,10 @@ import java.util.Optional;
 
 @Repository
 public class UserDAOImpl implements UserDAO{
+    /*
+     * Defines database operations for the user data tables.
+     */
+
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private DataSource dataSource;
     private JdbcTemplate jdbcTemplate;
