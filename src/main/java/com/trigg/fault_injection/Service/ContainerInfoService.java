@@ -1,9 +1,7 @@
 package com.trigg.fault_injection.Service;
 
 import com.github.dockerjava.api.DockerClient;
-import com.github.dockerjava.api.command.InspectContainerResponse;
-import com.github.dockerjava.api.model.*;
-import com.trigg.fault_injection.Model.ContainerStatusDTO;
+import com.trigg.fault_injection.Model.ContainerStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,7 +23,7 @@ public class ContainerInfoService {
         this.dockerClient = dockerClient;
     }
 
-    public List<ContainerStatusDTO> getContainerStatuses() {
+    public List<ContainerStatus> getContainerStatuses() {
         return dockerClient.listContainersCmd()
                 .withShowAll(true)
                 .withLabelFilter(Collections.singletonList(targetLabel))
@@ -36,7 +34,7 @@ public class ContainerInfoService {
                     String name = container.getNames()[0].replace("/", "");
                     String status = container.getStatus();
 
-                    return new ContainerStatusDTO(id, name, status);
+                    return new ContainerStatus(id, name, status);
                 })
 
                 .collect(Collectors.toList());

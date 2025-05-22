@@ -4,6 +4,10 @@ import com.trigg.fault_injection.Database.FaultDAO;
 import com.trigg.fault_injection.Service.DockerService;
 
 public class NodeCrash implements Fault {
+    /*
+     * Stops one or more nodes.
+     */
+
     int f_id;
     String username;
     String name;

@@ -4,6 +4,10 @@ import com.trigg.fault_injection.Database.FaultDAO;
 import com.trigg.fault_injection.Service.DockerService;
 
 public class NetworkDelay implements Fault {
+    /*
+     * Increases the amount of time it takes for data to travel between two points in a network
+     */
+
     private int f_id;
     private String username;
     private String name;

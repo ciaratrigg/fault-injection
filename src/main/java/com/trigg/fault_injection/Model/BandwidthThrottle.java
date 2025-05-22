@@ -4,6 +4,11 @@ import com.trigg.fault_injection.Database.FaultDAO;
 import com.trigg.fault_injection.Service.DockerService;
 
 public class BandwidthThrottle implements Fault{
+    /*
+    * Intentionally limits the amount of data that can be transmitted over a network
+    * during a specified period. Simulates network congestion.
+     */
+    
     private int f_id;
     private String username;
     private String name;

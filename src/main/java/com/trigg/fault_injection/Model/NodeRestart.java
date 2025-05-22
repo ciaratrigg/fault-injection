@@ -4,6 +4,10 @@ import com.trigg.fault_injection.Database.FaultDAO;
 import com.trigg.fault_injection.Service.DockerService;
 
 public class NodeRestart implements Fault {
+    /*
+     * Repeatedly restarts one or more nodes.
+     */
+
     private int f_id;
     private String username;
     private String name;
