@@ -11,6 +11,12 @@ import java.util.function.Supplier;
 
 @Component
 public class FaultFactory {
+
+    /*
+     * Centralizes and manages the creation of all supported Fault objects based on
+     * user input.
+     */
+
     private Map<String, Supplier<Fault>> faultSupplier = new HashMap<>();
 
     @Autowired

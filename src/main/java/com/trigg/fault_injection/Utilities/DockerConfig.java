@@ -12,6 +12,11 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class DockerConfig {
+    /*
+     * Sets up the Docker connection, allowing Faultify
+     * to communicate with the Docker daemon.
+     */
+
     @Bean
     DockerClient dockerClient() {
         // Specify the location of the Docker daemon
