@@ -4,6 +4,11 @@ import com.trigg.fault_injection.Database.FaultDAO;
 import com.trigg.fault_injection.Service.DockerService;
 
 public class CpuStressSidecar implements Fault{
+    /*
+     * Launches a dummy container for the purpose of consuming resources.
+     */
+
+
     private int f_id;
     private String username;
     private String name;

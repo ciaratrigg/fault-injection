@@ -1,11 +1,11 @@
 package com.trigg.fault_injection.Model;
 
-public class ContainerStatusDTO {
+public class ContainerStatus {
     private String id;
     private String name;
     private String status;
 
-    public ContainerStatusDTO(String id, String name, String status) {
+    public ContainerStatus(String id, String name, String status) {
         this.id = id;
         this.name = name;
         this.status = status;

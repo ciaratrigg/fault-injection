@@ -18,6 +18,10 @@ import java.util.List;
 
 @Repository
 public class FaultDAOImpl implements FaultDAO {
+    /*
+     * Defines database operations for the fault data tables.
+     */
+
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private DataSource dataSource;
     private JdbcTemplate jdbcTemplate;

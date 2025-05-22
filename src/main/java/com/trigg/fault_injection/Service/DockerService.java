@@ -18,6 +18,10 @@ import java.util.logging.Logger;
 @Service
 public class DockerService {
 
+    /*
+     * Service class which uses the Docker Client to inject faults into the target system.
+     */
+
     private DockerClient dockerClient;
     private ExecutorService executorService;
     private ScheduledExecutorService scheduler;
@@ -37,9 +41,6 @@ public class DockerService {
 
     @Value("${docker.tgtlabel}")
     private String targetLabel;
-
-    @Value("${spring.application.name}")
-    private String appName;
 
     @Autowired
     public DockerService(DockerClient dockerClient, ToxiproxyService toxiproxyService, FaultLog faultLog) throws IOException {

@@ -12,7 +12,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
-
+    /*
+     * Defines rest endpoints for administrator use such as approving user accounts,
+     * upgrading or downgrading user permissions, and viewing pending users.
+    */
     private AppUserService appUserService;
 
     @Autowired

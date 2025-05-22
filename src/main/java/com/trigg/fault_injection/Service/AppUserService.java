@@ -15,6 +15,9 @@ import java.util.List;
 
 @Service
 public class AppUserService implements UserDetailsService {
+    /*
+     * Service class used to access the UserDAO.
+     */
 
     private UserDAO userDAO;
     private JdbcTemplate jdbcTemplate;

@@ -12,6 +12,11 @@ import java.util.stream.Collectors;
 
 @ShellComponent
 public class InjectFaultCommands {
+    /*
+     * Defines shell commands to inject pre-defined faults, list running/completed jobs,
+     * and list all defined faults.
+     */
+
     private FaultService faultService;
     private AuthContext authContext;
 

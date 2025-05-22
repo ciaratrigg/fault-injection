@@ -12,6 +12,10 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/fault")
 public class InjectFaultController {
+    /*
+     * Defines rest endpoints to inject pre-defined faults, list running/completed jobs,
+     * and list all defined faults.
+     */
 
     private final FaultService faultService;
     private final AuthContext authContext;

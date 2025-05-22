@@ -15,6 +15,10 @@ import java.util.logging.Logger;
 @Service
 public class ToxiproxyService {
 
+    /*
+     * Service class used for creating proxies and network related faults.
+     */
+
     private ToxiproxyClient client;
     private Map<String, Proxy> proxies = new HashMap<>();
     private static final Logger LOGGER = Logger.getLogger(ToxiproxyService.class.getName());
