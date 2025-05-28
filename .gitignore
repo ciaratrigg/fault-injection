@@ -36,7 +36,7 @@ logs/
 *.env
 
 # Application properties
-application.properties
+src/main/resources/application.properties
 
 # Docker
 docker-compose.override.yml
