@@ -46,3 +46,6 @@ docker-compose.override.yml
 db/
 db-data/
 postgres-data/
+
+# Test files
+src/test/
