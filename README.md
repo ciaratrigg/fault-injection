@@ -105,7 +105,17 @@ Example:
 define bandwidth-throttle --name limit-band --duration 30 --rate 512
 ```
 
-### 6. Tips 
+### 6. Fault Injection
+Once faults have been defined, you can schedule them for execution using 
+the following command: 
+```
+inject --name fault-name --scheduled_for 60
+```
+The scheduled_for parameter represents the seconds after submission that the 
+fault will be executed given a thread is available. Otherwise, the job will wait
+to execute until a thread becomes available. 
+
+### 7. Tips 
 - Run ```help [command]``` to view extended details of any shell command.
 - Make sure the specified target system is running (duh! :) )
 - Faults can be stacked or chained for complex scenarios using a shell script (see ```script``` command). 
